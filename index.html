@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Annie Hsu 資產管理</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Manrope:wght@600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Noto Sans TC', sans-serif; background: #ece8dd; color: #2c2c28; padding-bottom: 50px; }
+  .shell { max-width: 560px; margin: 0 auto; padding: 0 14px; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; padding: 26px 4px 16px; flex-wrap: wrap; gap: 14px; }
+  .kicker { font-family: 'Manrope', sans-serif; font-size: 10px; letter-spacing: 3px; font-weight: 700; color: #a39e8d; }
+  h1 { font-size: 24px; font-weight: 900; margin-top: 2px; letter-spacing: -0.5px; }
+  .grand-box { background: #2c2c28; color: #fff; padding: 9px 16px; border-radius: 13px; text-align: right; }
+  .grand-label { font-size: 10px; color: #b6b1a2; letter-spacing: 1px; }
+  .grand-val { font-family: 'Manrope', sans-serif; font-size: 21px; font-weight: 800; margin-top: 1px; }
+  nav { display: flex; gap: 5px; padding: 2px 0 16px; flex-wrap: wrap; }
+  .tab { display: flex; align-items: center; gap: 4px; border: none; background: #ddd8c9; color: #76715f;
+    padding: 9px 13px; border-radius: 10px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .15s; }
+  .tab.on { background: #2c2c28; color: #fff; }
+  .tab:active { transform: scale(.96); }
+  h2 { font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
+  .sec-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 13px; }
+  .add-btn { display: flex; align-items: center; gap: 4px; border: none; color: #fff; padding: 9px 14px;
+    border-radius: 10px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .15s; }
+  .add-btn:active { transform: scale(.96); }
+  .ghost-btn { border: 1.5px solid #d0cab9; background: #fff; color: #76715f; padding: 9px 13px;
+    border-radius: 10px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
+  .card { background: #fff; border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 11px; margin-bottom: 8px; }
+  .card-top { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+  .code-tag { font-family: 'Manrope', sans-serif; font-size: 13.5px; font-weight: 800; }
+  .card-name { font-size: 13px; font-weight: 700; }
+  .card-meta { font-size: 11.5px; color: #9a9586; margin-top: 3px; }
+  .card-amt { font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 700; }
+  .card-amt-sub { font-size: 10px; color: #a39e8d; }
+  .icon-btn { width: 30px; height: 30px; border-radius: 8px; background: #f4f1e9; display: flex;
+    align-items: center; justify-content: center; color: #76715f; border: none; cursor: pointer; font-size: 14px; }
+  .icon-btn:active { background: #e6e1d3; }
+  .empty { background: #fff; border-radius: 14px; padding: 30px 20px; text-align: center; color: #a39e8d; font-size: 12.5px; }
+  .total-bar { background: #2c2c28; color: #fff; border-radius: 12px; padding: 12px 17px; margin-top: 3px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; font-weight: 700; }
+  .total-bar .big { font-weight: 800; font-size: 16px; font-family: 'Manrope', sans-serif; }
+  .edit-card { background: #fbfaf6; border-radius: 14px; padding: 14px 15px; margin-bottom: 8px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field-label { font-size: 11px; color: #9a9586; font-weight: 700; }
+  .field input { border: 1.5px solid #ddd8c9; border-radius: 8px; padding: 9px 10px; font-size: 13.5px;
+    background: #fff; width: 100%; font-family: inherit; }
+  .field input:focus { outline: none; border-color: #4a4a44; }
+  .edit-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 11px; }
+  .date-bar { display: flex; justify-content: space-between; align-items: baseline;
+    padding: 2px 4px 12px; }
+  .date-text { font-size: 13px; color: #76715f; font-weight: 700; }
+  .time-text { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: #2c2c28;
+    letter-spacing: 0.5px; }
+  .ov-top { background: #fff; border-radius: 18px; padding: 22px 20px; display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+  .donut { width: 144px; height: 144px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .hole { width: 96px; height: 96px; border-radius: 50%; background: #fff; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; }
+  .hole-sm { font-size: 10.5px; color: #a39e8d; letter-spacing: 1px; }
+  .hole-big { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 800; margin-top: 2px; }
+  .ov-list { flex: 1; min-width: 195px; }
+  .ov-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0ece1; }
+  .dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+  .ov-label { font-size: 13.5px; font-weight: 700; }
+  .ov-sub { font-size: 11.5px; color: #a39e8d; font-weight: 400; }
+  .ov-val { font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 700; }
+  .ov-pct { font-size: 11px; color: #a39e8d; }
+  .countdown-sec { background: #fff; border-radius: 18px; padding: 18px 20px; margin-top: 12px; }
+  .countdown-title { font-size: 14px; font-weight: 900; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .cd-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0ece1; }
+  .cd-row:last-child { border-bottom: none; }
+  .cd-left { display: flex; flex-direction: column; gap: 2px; }
+  .cd-bank { font-size: 13px; font-weight: 700; }
+  .cd-meta { font-size: 11px; color: #9a9586; }
+  .cd-right { text-align: right; }
+  .cd-days { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 800; }
+  .cd-date { font-size: 10.5px; color: #a39e8d; margin-top: 1px; }
+  .cd-pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; margin-top: 3px; }
+  .int-line { font-size: 11px; color: #3a6f5c; font-weight: 700; margin-top: 4px; }
+  .int-bar { background: #3a6f5c; color: #fff; border-radius: 12px; padding: 11px 17px; margin-top: 6px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; }
+  .fx-box { background: #fff; border-radius: 12px; padding: 11px 15px; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .fx-label { font-size: 12px; color: #76715f; font-weight: 700; }
+  .fx-input { border: 1.5px solid #ddd8c9; border-radius: 8px; padding: 7px 10px; font-size: 14px;
+    width: 90px; text-align: right; font-family: 'Manrope', sans-serif; font-weight: 700; }
+  .fx-input:focus { outline: none; border-color: #4a4a44; }
+  .ins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 11px;
+    padding-top: 11px; border-top: 1px solid #f0ece1; }
+  .ins-cell { background: #f6f3ea; border-radius: 9px; padding: 9px 11px; }
+  .ins-cell-label { font-size: 11px; color: #9a9586; font-weight: 700; }
+  .ins-cell-usd { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 800; color: #b5894a; margin-top: 2px; }
+  .ins-cell-twd { font-size: 11.5px; color: #76715f; margin-top: 1px; }
+  .ins-note { font-size: 11px; color: #9a9586; line-height: 1.6; margin-top: 8px; padding: 0 4px; }
+  .div-line { font-size: 11px; color: #c2602e; font-weight: 700; margin-top: 11px;
+    padding-top: 10px; border-top: 1px solid #f0ece1; }
+  .div-bar { background: #c2602e; color: #fff; border-radius: 12px; padding: 11px 17px; margin-top: 6px;
+    display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; }
+  .cur-tag { background: #f0e6d2; color: #8a6a2f; font-size: 10.5px; font-weight: 700;
+    padding: 1px 7px; border-radius: 6px; }
+  .fld-select { border: 1.5px solid #ddd8c9; border-radius: 8px; padding: 9px 10px; font-size: 13.5px;
+    background: #fff; width: 100%; font-family: inherit; }
+  .fld-select:focus { outline: none; border-color: #4a4a44; }
+  .rate-note { font-size: 11px; color: #9a9586; margin: 6px 0 13px; }
+  .rate-card { background: #fff; border-radius: 14px; padding: 13px 15px; margin-bottom: 9px; }
+  .rate-head { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .rate-badge { color: #fff; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 7px; }
+  .rate-tag { font-size: 11px; color: #9a9586; }
+  .rate-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f3efe4; }
+  .rate-k { font-size: 12px; color: #76715f; }
+  .rate-v { font-size: 12px; font-weight: 700; font-family: 'Manrope', sans-serif; }
+  .rate-mine { font-size: 11px; font-weight: 700; margin-top: 8px; background: #f6f3ea; padding: 6px 9px; border-radius: 8px; }
+  footer { margin-top: 22px; padding: 13px 4px 0; border-top: 1px solid #d6d1c2; }
+  .foot-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .foot-btn { border: 1.5px solid #cfc9b8; background: #fff; color: #5f5b4d; padding: 7px 13px;
+    border-radius: 9px; font-size: 11.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
+  .foot-note { font-size: 11px; color: #9a9586; line-height: 1.6; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div>
+      <div class="kicker">ASSET TRACKER</div>
+      <h1>Annie Hsu 資產管理</h1>
+    </div>
+    <div class="grand-box">
+      <div class="grand-label">投資總資產</div>
+      <div class="grand-val" id="grandTotal">NT$0</div>
+    </div>
+  </header>
+
+  <nav id="nav"></nav>
+  <main id="main"></main>
+
+  <footer>
+    <div class="foot-btns">
+      <button class="foot-btn" onclick="exportData()">匯出備份</button>
+      <button class="foot-btn" onclick="document.getElementById('importFile').click()">匯入備份</button>
+      <button class="foot-btn" onclick="resetData()">還原預設</button>
+      <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
+    </div>
+    <div class="foot-note">資料自動儲存在這台裝置的瀏覽器。換手機或清除瀏覽器資料前，請先「匯出備份」，到新裝置再「匯入備份」。</div>
+  </footer>
+</div>
+
+<script>
+const STORAGE_KEY = "asset_manager_html_v1";
+
+const SEED = {
+  cash: [
+    { id: "c1", bank: "聯邦銀行", note: "New New Bank 新戶15%活動", currency: "TWD", balance: 100000, rate: 15.0 },
+    { id: "c2", bank: "樂天銀行", note: "數位帳戶活存（1.5%無上限）", currency: "TWD", balance: 970000, rate: 1.5 },
+    { id: "c3", bank: "永豐銀行", note: "DAWHO 大戶活存（30萬享1.5%、其餘一般利率）", currency: "TWD", balance: 1500000, rate: 0.42 }
+  ],
+  deposits: [
+    { id: "d1", bank: "LINE Bank", name: "定期存款50萬-1", principal: 500000, rate: 2.05, maturity: "2027-06-21" },
+    { id: "d2", bank: "LINE Bank", name: "定期存款2", principal: 500000, rate: 2.05, maturity: "2027-06-21" },
+    { id: "d3", bank: "LINE Bank", name: "定期存款50萬3", principal: 500000, rate: 2.05, maturity: "2027-06-21" },
+    { id: "d4", bank: "樂天銀行", name: "台幣定存", principal: 200000, rate: 1.93, maturity: "2027-02-22" },
+    { id: "d5", bank: "樂天銀行", name: "台幣定存", principal: 100000, rate: 1.95, maturity: "2027-04-22" },
+    { id: "d6", bank: "樂天銀行", name: "台幣定存", principal: 200000, rate: 1.95, maturity: "2027-04-22" },
+    { id: "d7", bank: "永豐銀行", name: "立馬豐收臺定專案", principal: 1500000, rate: 1.9, maturity: "2026-08-22" },
+    { id: "d8", bank: "樂天銀行", name: "一個月期定存", principal: 1000000, rate: 1.55, maturity: "2026-06-23" }
+  ],
+  etfs: [
+    { id: "e1", code: "00878", name: "國泰永續高股息", shares: 4000, cost: 28.25, date: "2026-05-22", dividend: 2.0, payDate: "2026-07-21" }
+  ],
+  stocks: [],
+  insurances: [
+    { id: "i1", company: "中國人壽", name: "美鑫外幣利率變動型終身壽險", policyNo: "D1205192",
+      currency: "USD", paid: 3592, cashValue: 4178, rate: 3.30 }
+  ],
+  fxRate: 32.5,
+  fxRateJpy: 0.20
+};
+
+const RATES = [
+  { bank: "LINE Bank", tag: "純網銀", color: "#1d9e75",
+    rows: [["活存（一般）","約 0.6%"],["定存 6 個月","約 1.48%"],["定存 1 年期","約 1.77%"]],
+    note: "你持有 3 筆定存・2.05% 限定專案" },
+  { bank: "樂天銀行", tag: "純網銀", color: "#d85a30",
+    rows: [["活存（無上限）","1.5%"],["新戶活存 5 萬內","2.8%"],["定存 1 年期","約 1.78%"],["新戶 10 天專案","15%（5萬內）"]],
+    note: "你持有 3 筆定存・1.93%～1.95%" },
+  { bank: "永豐銀行", tag: "DAWHO 大戶", color: "#378add",
+    rows: [["大戶活存 30 萬內","1.5%"],["活存超過 30 萬","一般利率"],["換匯優利定存","優利特快車"]],
+    note: "你持有 1 筆定存 150 萬・1.90%" },
+  { bank: "聯邦銀行", tag: "New New Bank", color: "#ba7517",
+    rows: [["新戶活存 10 萬內","15%（限時）"],["舊戶活存（達任務）","最高 4%"],["舊戶活存（未達任務）","1.5%"]],
+    note: "高利率多有額度上限與任務條件" }
+];
+
+const TABS = [
+  { k: "overview", label: "總覽" },
+  { k: "cash", label: "活存" },
+  { k: "deposit", label: "台幣定存" },
+  { k: "etf", label: "ETF" },
+  { k: "stock", label: "股票" },
+  { k: "insurance", label: "保險" },
+  { k: "rates", label: "銀行利率" }
+];
+
+let data, currentTab = "overview", editingId = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const obj = JSON.parse(raw);
+      if (!obj.cash) obj.cash = [];
+      if (!obj.insurances) obj.insurances = [];
+      if (obj.fxRate == null) obj.fxRate = 32.5;
+      if (obj.fxRateJpy == null) obj.fxRateJpy = 0.20;
+      return obj;
+    }
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(SEED));
+}
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+function uid() { return Math.random().toString(36).slice(2, 9); }
+function NT(n) { return "NT$" + Math.round(Number(n) || 0).toLocaleString("zh-TW"); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+
+function fxOf(cur) {
+  if (cur === "TWD") return 1;
+  if (cur === "JPY") return Number(data.fxRateJpy||0);
+  return Number(data.fxRate||0);
+}
+function insToTwd(it) {
+  return Number(it.cashValue||0) * fxOf(it.currency||"USD");
+}
+
+function totals() {
+  const cash = data.cash.reduce((s,x) => s + Number(x.balance||0)*fxOf(x.currency||"TWD"), 0);
+  const dep = data.deposits.reduce((s,x) => s + Number(x.principal||0), 0);
+  const etf = data.etfs.reduce((s,x) => s + Number(x.shares||0)*Number(x.cost||0), 0);
+  const stk = data.stocks.reduce((s,x) => s + Number(x.shares||0)*Number(x.cost||0), 0);
+  const ins = data.insurances.reduce((s,x) => s + insToTwd(x), 0);
+  return { cash, dep, etf, stk, ins, grand: cash+dep+etf+stk+ins };
+}
+
+function render() {
+  const t = totals();
+  document.getElementById("grandTotal").textContent = NT(t.grand);
+
+  document.getElementById("nav").innerHTML = TABS.map(tb =>
+    `<button class="tab ${tb.k===currentTab?'on':''}" onclick="setTab('${tb.k}')">${tb.label}</button>`
+  ).join("");
+
+  const main = document.getElementById("main");
+  if (currentTab === "overview") main.innerHTML = viewOverview(t);
+  else if (currentTab === "cash") main.innerHTML = viewCash();
+  else if (currentTab === "deposit") main.innerHTML = viewDeposit();
+  else if (currentTab === "etf") main.innerHTML = viewHolding("etf");
+  else if (currentTab === "stock") main.innerHTML = viewHolding("stock");
+  else if (currentTab === "insurance") main.innerHTML = viewInsurance();
+  else if (currentTab === "rates") main.innerHTML = viewRates();
+}
+
+function setTab(k) { currentTab = k; editingId = null; render(); }
+
+/* ---- 總覽 ---- */
+function viewOverview(t) {
+  const rows = [
+    { label:"活存", val:t.cash, color:"#b5894a", sub:data.cash.length+" 個帳戶" },
+    { label:"台幣定存", val:t.dep, color:"#3a6f5c", sub:data.deposits.length+" 筆" },
+    { label:"ETF", val:t.etf, color:"#c2602e", sub:data.etfs.length+" 檔" },
+    { label:"股票", val:t.stk, color:"#7a5ea8", sub:data.stocks.length+" 檔" },
+    { label:"保險", val:t.ins, color:"#7a5ea8", sub:data.insurances.length+" 張" }
+  ];
+  let acc = 0;
+  const stops = rows.map(r => {
+    const f = t.grand>0 ? r.val/t.grand : 0;
+    const s = r.color+" "+(acc*100).toFixed(2)+"% "+((acc+f)*100).toFixed(2)+"%";
+    acc += f; return s;
+  });
+  const bg = t.grand>0 ? "conic-gradient("+stops.join(",")+")" : "#e6e1d6";
+  const pct = v => t.grand>0 ? (v/t.grand*100).toFixed(1) : "0.0";
+  return `<div class="date-bar">
+      <span class="date-text" id="dateText">${dateStr()}</span>
+      <span class="time-text" id="timeText">${timeStr()}</span>
+    </div>
+    <div class="ov-top">
+    <div class="donut" style="background:${bg}">
+      <div class="hole"><div class="hole-sm">總資產</div><div class="hole-big">${NT(t.grand)}</div></div>
+    </div>
+    <div class="ov-list">
+      ${rows.map(r => `<div class="ov-row">
+        <span style="display:flex;align-items:center;gap:9px">
+          <span class="dot" style="background:${r.color}"></span>
+          <span><span class="ov-label">${r.label}</span><span class="ov-sub"> · ${r.sub}</span></span>
+        </span>
+        <span style="text-align:right">
+          <div class="ov-val">${NT(r.val)}</div><div class="ov-pct">${pct(r.val)}%</div>
+        </span>
+      </div>`).join("")}
+    </div>
+  </div>` + viewCountdown();
+}
+
+function dateStr() {
+  const d = new Date();
+  const wd = ["日","一","二","三","四","五","六"][d.getDay()];
+  return d.getFullYear() + " 年 " + (d.getMonth()+1) + " 月 " + d.getDate() + " 日　星期" + wd;
+}
+function timeStr() {
+  const d = new Date();
+  const p = n => String(n).padStart(2,"0");
+  return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+}
+function tickClock() {
+  const dt = document.getElementById("dateText");
+  const tt = document.getElementById("timeText");
+  if (dt) dt.textContent = dateStr();
+  if (tt) tt.textContent = timeStr();
+}
+setInterval(tickClock, 1000);
+
+/* ---- 定存到期倒數 ---- */
+function viewCountdown() {
+  if (data.deposits.length === 0) return "";
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const list = data.deposits.map(d => {
+    let days = null;
+    if (d.maturity) {
+      const m = new Date(d.maturity + "T00:00:00");
+      if (!isNaN(m)) days = Math.round((m - today) / 86400000);
+    }
+    return { ...d, days };
+  }).sort((a,b) => {
+    if (a.days == null) return 1;
+    if (b.days == null) return -1;
+    return a.days - b.days;
+  });
+
+  function style(days) {
+    if (days == null) return { txt:"#a39e8d", pill:"未設定到期日", pbg:"#f0ece1", pfg:"#9a9586" };
+    if (days < 0) return { txt:"#a32d2d", pill:"已到期", pbg:"#fcebeb", pfg:"#a32d2d" };
+    if (days <= 60) return { txt:"#a32d2d", pill:"即將到期", pbg:"#fcebeb", pfg:"#a32d2d" };
+    if (days <= 180) return { txt:"#854f0b", pill:"半年內", pbg:"#faeeda", pfg:"#854f0b" };
+    return { txt:"#3a6f5c", pill:"", pbg:"", pfg:"" };
+  }
+
+  const rows = list.map(d => {
+    const s = style(d.days);
+    let daysTxt;
+    if (d.days == null) daysTxt = "—";
+    else if (d.days < 0) daysTxt = "已過期 " + Math.abs(d.days) + " 天";
+    else if (d.days === 0) daysTxt = "今天到期";
+    else daysTxt = "還有 " + d.days + " 天";
+    return `<div class="cd-row">
+      <div class="cd-left">
+        <span class="cd-bank">${esc(d.bank)} <span style="font-weight:400;color:#9a9586;font-size:11px">${esc(d.name||"")}</span></span>
+        <span class="cd-meta">${NT(d.principal)} ・ 利率 ${esc(d.rate)}% ・ 年息 ${NT(Number(d.principal||0)*Number(d.rate||0)/100)}</span>
+      </div>
+      <div class="cd-right">
+        <div class="cd-days" style="color:${s.txt}">${daysTxt}</div>
+        <div class="cd-date">${esc(d.maturity||"未設定")}</div>
+        ${s.pill ? `<span class="cd-pill" style="background:${s.pbg};color:${s.pfg}">${s.pill}</span>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+
+  return `<div class="countdown-sec">
+    <div class="countdown-title">⏳ 定存到期日倒數</div>
+    ${rows}
+  </div>`;
+}
+
+/* ---- 活存 ---- */
+function viewCash() {
+  const total = data.cash.reduce((s,x)=>s+Number(x.balance||0),0);
+  const yearInt = data.cash.reduce((s,x)=>s+Number(x.balance||0)*Number(x.rate||0)/100,0);
+  let html = `<div class="sec-head"><h2>活存帳戶</h2>
+    <button class="add-btn" style="background:#b5894a" onclick="startNew('cash')">＋ 新增</button></div>`;
+  if (editingId === "new-cash") html += editCash({});
+  if (data.cash.length===0 && editingId!=="new-cash")
+    html += `<div class="empty">尚無活存帳戶。點「新增」加入。</div>`;
+  data.cash.forEach(it => {
+    if (editingId === it.id) { html += editCash(it); return; }
+    const yi = Number(it.balance||0)*Number(it.rate||0)/100;
+    const intLine = Number(it.rate||0)>0
+      ? `<div class="int-line">年利率 ${esc(it.rate)}% ・ 預估年息 ${NT(yi)}（每月約 ${NT(yi/12)}）</div>`
+      : `<div class="int-line" style="color:#a39e8d">尚未設定利率</div>`;
+    html += `<div class="card" style="flex-direction:column;align-items:stretch;gap:0">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="flex:1">
+          <div class="card-top"><span class="code-tag" style="color:#b5894a">${esc(it.bank)}</span>
+            <span class="card-name">${esc(it.note||"活存")}</span></div>
+        </div>
+        <div style="text-align:right;margin-right:4px">
+          <div class="card-amt">${NT(it.balance)}</div><div class="card-amt-sub">餘額</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
+          <button class="icon-btn" onclick="del('cash','${it.id}')">🗑</button>
+        </div>
+      </div>
+      ${intLine}
+    </div>`;
+  });
+  if (data.cash.length>0) {
+    html += `<div class="total-bar"><span>活存合計（${data.cash.length} 個帳戶）</span><span class="big">${NT(total)}</span></div>`;
+    if (yearInt>0)
+      html += `<div class="int-bar"><span>預估利息收入</span><span>每年 ${NT(yearInt)}　每月約 ${NT(yearInt/12)}</span></div>`;
+    html += `<div class="ins-note">高利活存多為限時、限額的優惠專案（如新戶 15%），活動結束後通常回到一般利率。預估年息為「整年維持此利率」的試算值，實際利息以銀行結算為準。</div>`;
+  }
+  return html;
+}
+function editCash(it) {
+  return `<div class="edit-card">
+    <div class="form-grid">
+      <label class="field"><span class="field-label">銀行/帳戶</span><input id="f_bank" value="${esc(it.bank)}" placeholder="聯邦銀行"></label>
+      <label class="field"><span class="field-label">備註說明</span><input id="f_note" value="${esc(it.note)}" placeholder="New New Bank"></label>
+      <label class="field"><span class="field-label">目前餘額</span><input id="f_balance" value="${it.balance||""}" placeholder="100000" inputmode="numeric"></label>
+      <label class="field"><span class="field-label">年利率 %</span><input id="f_rate" value="${it.rate||""}" placeholder="15.0" inputmode="decimal"></label>
+    </div>
+    <div class="edit-actions">
+      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
+      <button class="add-btn" style="background:#b5894a" onclick="saveCash()">儲存</button>
+    </div></div>`;
+}
+function saveCash() {
+  const it = {
+    bank: document.getElementById("f_bank").value.trim(),
+    note: document.getElementById("f_note").value.trim(),
+    balance: Number(document.getElementById("f_balance").value)||0,
+    rate: Number(document.getElementById("f_rate").value)||0
+  };
+  if (!it.bank && !it.balance) { cancelEdit(); return; }
+  if (editingId === "new-cash") data.cash.push({ id:uid(), ...it });
+  else data.cash = data.cash.map(x => x.id===editingId ? { id:editingId, ...it } : x);
+  editingId = null; save(); render();
+}
+
+/* ---- 定存 ---- */
+function viewDeposit() {
+  const total = data.deposits.reduce((s,x)=>s+Number(x.principal||0),0);
+  const yearInt = data.deposits.reduce((s,x)=>s+Number(x.principal||0)*Number(x.rate||0)/100,0);
+  let html = `<div class="sec-head"><h2>台幣定存</h2>
+    <button class="add-btn" style="background:#3a6f5c" onclick="startNew('deposit')">＋ 新增</button></div>`;
+  if (editingId === "new-deposit") html += editDeposit({});
+  if (data.deposits.length===0 && editingId!=="new-deposit")
+    html += `<div class="empty">尚無定存。點「新增」加入。</div>`;
+  data.deposits.forEach(it => {
+    if (editingId === it.id) { html += editDeposit(it); return; }
+    const yi = Number(it.principal||0)*Number(it.rate||0)/100;
+    const mi = yi/12;
+    html += `<div class="card">
+      <div style="flex:1">
+        <div class="card-top"><span class="code-tag" style="color:#3a6f5c">${esc(it.bank)}</span>
+          <span class="card-name">${esc(it.name||"定存")}</span></div>
+        <div class="card-meta">利率 ${esc(it.rate)}% ・ 到期 ${esc(it.maturity||"—")}</div>
+        <div class="int-line">每年利息 ${NT(yi)}　每月約 ${NT(mi)}</div>
+      </div>
+      <div style="text-align:right;margin-right:4px">
+        <div class="card-amt">${NT(it.principal)}</div><div class="card-amt-sub">本金</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
+        <button class="icon-btn" onclick="del('deposits','${it.id}')">🗑</button>
+      </div></div>`;
+  });
+  if (data.deposits.length>0)
+    html += `<div class="total-bar"><span>定存合計本金（${data.deposits.length} 筆）</span><span class="big">${NT(total)}</span></div>`
+      + `<div class="int-bar"><span>預估利息收入</span><span>每年 ${NT(yearInt)}　每月約 ${NT(yearInt/12)}</span></div>`;
+  return html;
+}
+function editDeposit(it) {
+  return `<div class="edit-card">
+    <div class="form-grid">
+      <label class="field"><span class="field-label">銀行</span><input id="f_bank" value="${esc(it.bank)}" placeholder="LINE Bank"></label>
+      <label class="field"><span class="field-label">名稱</span><input id="f_name" value="${esc(it.name)}" placeholder="定期存款"></label>
+      <label class="field"><span class="field-label">本金</span><input id="f_principal" value="${it.principal||""}" placeholder="500000" inputmode="numeric"></label>
+      <label class="field"><span class="field-label">年利率 %</span><input id="f_rate" value="${it.rate||""}" placeholder="2.05" inputmode="decimal"></label>
+      <label class="field"><span class="field-label">到期日</span><input id="f_maturity" value="${esc(it.maturity)}" type="date"></label>
+    </div>
+    <div class="edit-actions">
+      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
+      <button class="add-btn" style="background:#3a6f5c" onclick="saveDeposit()">儲存</button>
+    </div></div>`;
+}
+function saveDeposit() {
+  const it = {
+    bank: document.getElementById("f_bank").value.trim(),
+    name: document.getElementById("f_name").value.trim(),
+    principal: Number(document.getElementById("f_principal").value)||0,
+    rate: Number(document.getElementById("f_rate").value)||0,
+    maturity: document.getElementById("f_maturity").value
+  };
+  if (!it.bank && !it.principal) { cancelEdit(); return; }
+  if (editingId === "new-deposit") data.deposits.push({ id:uid(), ...it });
+  else data.deposits = data.deposits.map(x => x.id===editingId ? { id:editingId, ...it } : x);
+  editingId = null; save(); render();
+}
+
+/* ---- ETF / 股票 ---- */
+function viewHolding(kind) {
+  const isEtf = kind==="etf";
+  const list = isEtf ? data.etfs : data.stocks;
+  const key = isEtf ? "etfs" : "stocks";
+  const accent = isEtf ? "#c2602e" : "#7a5ea8";
+  const label = isEtf ? "ETF 持股" : "股票持股";
+  const total = list.reduce((s,x)=>s+Number(x.shares||0)*Number(x.cost||0),0);
+  const yearDiv = list.reduce((s,x)=>s+Number(x.shares||0)*Number(x.dividend||0),0);
+  let html = `<div class="sec-head"><h2>${label}</h2>
+    <button class="add-btn" style="background:${accent}" onclick="startNew('${kind}')">＋ 新增</button></div>`;
+  if (editingId === "new-"+kind) html += editHolding({}, kind, accent);
+  if (list.length===0 && editingId!=="new-"+kind)
+    html += `<div class="empty">尚無${isEtf?"ETF":"股票"}持股。點「新增」加入。</div>`;
+  list.forEach(it => {
+    if (editingId === it.id) { html += editHolding(it, kind, accent); return; }
+    const cost = Number(it.shares||0)*Number(it.cost||0);
+    const yd = Number(it.shares||0)*Number(it.dividend||0);
+    const yieldPct = cost>0 ? (yd/cost*100) : 0;
+    let divLine;
+    if (Number(it.dividend||0)>0) {
+      const payTxt = it.payDate ? `　下次配息日 ${esc(it.payDate)}` : "";
+      divLine = `<div class="div-line">預估年配息 ${NT(yd)}（每股 ${it.dividend} 元・殖利率約 ${yieldPct.toFixed(2)}%）${payTxt}</div>`;
+    } else {
+      divLine = `<div class="div-line" style="color:#a39e8d">尚未設定配息（編輯可填入年配息與配息日）</div>`;
+    }
+    html += `<div class="card" style="flex-direction:column;align-items:stretch;gap:0">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="flex:1">
+          <div class="card-top"><span class="code-tag" style="color:${accent}">${esc(it.code||"—")}</span>
+            <span class="card-name">${esc(it.name||"未命名")}</span></div>
+          <div class="card-meta">${Number(it.shares||0).toLocaleString()} 股 × NT$${esc(it.cost)} ・ 購買日 ${esc(it.date||"—")}</div>
+        </div>
+        <div style="text-align:right;margin-right:4px">
+          <div class="card-amt">${NT(cost)}</div>
+          <div class="card-amt-sub">投入成本</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
+          <button class="icon-btn" onclick="del('${key}','${it.id}')">🗑</button>
+        </div>
+      </div>
+      ${divLine}
+    </div>`;
+  });
+  if (list.length>0) {
+    html += `<div class="total-bar"><span>${label}合計投入成本</span><span class="big">${NT(total)}</span></div>`;
+    if (yearDiv>0)
+      html += `<div class="div-bar"><span>預估配息收入</span><span>每年 ${NT(yearDiv)}　每季約 ${NT(yearDiv/4)}　每月約 ${NT(yearDiv/12)}</span></div>`;
+  }
+  return html;
+}
+function editHolding(it, kind, accent) {
+  const isEtf = kind==="etf";
+  return `<div class="edit-card">
+    <div class="form-grid">
+      <label class="field"><span class="field-label">代號</span><input id="f_code" value="${esc(it.code)}" placeholder="00878"></label>
+      <label class="field"><span class="field-label">名稱</span><input id="f_name" value="${esc(it.name)}" placeholder="國泰永續高股息"></label>
+      <label class="field"><span class="field-label">股數</span><input id="f_shares" value="${it.shares||""}" placeholder="4000" inputmode="numeric"></label>
+      <label class="field"><span class="field-label">成本/股</span><input id="f_cost" value="${it.cost||""}" placeholder="28.25" inputmode="decimal"></label>
+      <label class="field"><span class="field-label">購買日</span><input id="f_date" value="${esc(it.date)}" type="date"></label>
+      <label class="field"><span class="field-label">年配息/股（元）</span><input id="f_dividend" value="${it.dividend||""}" placeholder="2.0" inputmode="decimal"></label>
+      <label class="field"><span class="field-label">下次配息日</span><input id="f_payDate" value="${esc(it.payDate)}" type="date"></label>
+    </div>
+    <div class="edit-actions">
+      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
+      <button class="add-btn" style="background:${accent}" onclick="saveHolding('${kind}')">儲存</button>
+    </div></div>`;
+}
+function saveHolding(kind) {
+  const it = {
+    code: document.getElementById("f_code").value.trim(),
+    name: document.getElementById("f_name").value.trim(),
+    shares: Number(document.getElementById("f_shares").value)||0,
+    cost: Number(document.getElementById("f_cost").value)||0,
+    date: document.getElementById("f_date").value,
+    dividend: Number(document.getElementById("f_dividend").value)||0,
+    payDate: document.getElementById("f_payDate").value
+  };
+  const key = kind==="etf" ? "etfs" : "stocks";
+  if (!it.code && !it.name) { cancelEdit(); return; }
+  if (editingId === "new-"+kind) data[key].push({ id:uid(), ...it });
+  else data[key] = data[key].map(x => x.id===editingId ? { id:editingId, ...it } : x);
+  editingId = null; save(); render();
+}
+
+/* ---- 保險 ---- */
+const CUR_SYM = { USD: "US$", TWD: "NT$", JPY: "JP¥" };
+const CUR_NAME = { USD: "美元", TWD: "台幣", JPY: "日幣" };
+
+function viewInsurance() {
+  let html = `<div class="sec-head"><h2>保險</h2>
+    <button class="add-btn" style="background:#b5894a" onclick="startNew('insurance')">＋ 新增</button></div>`;
+  html += `<div class="fx-box">
+    <span class="fx-label">美元匯率 1 USD =</span>
+    <input class="fx-input" id="fxInputUsd" value="${Number(data.fxRate||0)}" inputmode="decimal" onchange="saveFx()">
+  </div>`;
+  html += `<div class="fx-box">
+    <span class="fx-label">日幣匯率 1 JPY =</span>
+    <input class="fx-input" id="fxInputJpy" value="${Number(data.fxRateJpy||0)}" inputmode="decimal" onchange="saveFx()">
+  </div>`;
+  if (editingId === "new-insurance") html += editInsurance({});
+  if (data.insurances.length===0 && editingId!=="new-insurance")
+    html += `<div class="empty">尚無保單。點「新增」加入。</div>`;
+
+  let totalTwd = 0, paidTwd = 0;
+  data.insurances.forEach(it => {
+    if (editingId === it.id) { html += editInsurance(it); return; }
+    const cur = it.currency || "USD";
+    const sym = CUR_SYM[cur] || "";
+    const cv = Number(it.cashValue||0);
+    const paid = Number(it.paid||0);
+    const rate = fxOf(cur);
+    totalTwd += cv * rate;
+    paidTwd += paid * rate;
+    const twdLine = v => cur==="TWD" ? "" : `<div class="ins-cell-twd">≈ ${NT(v*rate)}</div>`;
+    html += `<div class="card" style="flex-direction:column;align-items:stretch;gap:0">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="flex:1">
+          <div class="card-top"><span class="code-tag" style="color:#b5894a">${esc(it.company)}</span>
+            <span class="card-name">${esc(it.name||"保單")}</span></div>
+          <div class="card-meta">保單號 ${esc(it.policyNo||"—")} ・ 宣告利率 ${esc(it.rate)}% ・ <span class="cur-tag">${CUR_NAME[cur]||cur}</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
+          <button class="icon-btn" onclick="del('insurances','${it.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="ins-grid">
+        <div class="ins-cell">
+          <div class="ins-cell-label">已繳保費</div>
+          <div class="ins-cell-usd">${sym}${paid.toLocaleString()}</div>
+          ${twdLine(paid)}
+        </div>
+        <div class="ins-cell">
+          <div class="ins-cell-label">目前保價金</div>
+          <div class="ins-cell-usd">${sym}${cv.toLocaleString()}</div>
+          ${twdLine(cv)}
+        </div>
+      </div>
+    </div>`;
+  });
+  if (data.insurances.length>0) {
+    html += `<div class="total-bar"><span>保價金合計（換算台幣）</span><span class="big">${NT(totalTwd)}</span></div>`;
+    html += `<div class="ins-note">已繳保費合計約 ${NT(paidTwd)}（各幣別依上方匯率換算）。保價金為非保證之預估值，實際解約金請以保險公司保戶網站或客服為準。</div>`;
+  }
+  return html;
+}
+function editInsurance(it) {
+  const cur = it.currency || "USD";
+  const opt = (v,label) => `<option value="${v}" ${cur===v?"selected":""}>${label}</option>`;
+  return `<div class="edit-card">
+    <div class="form-grid">
+      <label class="field"><span class="field-label">保險公司</span><input id="f_company" value="${esc(it.company)}" placeholder="中國人壽"></label>
+      <label class="field"><span class="field-label">保單名稱</span><input id="f_name" value="${esc(it.name)}" placeholder="美鑫終身壽險"></label>
+      <label class="field"><span class="field-label">保單號碼</span><input id="f_policyNo" value="${esc(it.policyNo)}" placeholder="D1205192"></label>
+      <label class="field"><span class="field-label">幣別</span><select id="f_currency" class="fld-select">${opt("USD","美元 USD")}${opt("TWD","台幣 TWD")}${opt("JPY","日幣 JPY")}</select></label>
+      <label class="field"><span class="field-label">宣告利率 %</span><input id="f_rate" value="${it.rate||""}" placeholder="3.30" inputmode="decimal"></label>
+      <label class="field"><span class="field-label">已繳保費</span><input id="f_paid" value="${it.paid||""}" placeholder="3592" inputmode="decimal"></label>
+      <label class="field"><span class="field-label">目前保價金</span><input id="f_cashValue" value="${it.cashValue||""}" placeholder="4178" inputmode="decimal"></label>
+    </div>
+    <div class="edit-actions">
+      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
+      <button class="add-btn" style="background:#b5894a" onclick="saveInsurance()">儲存</button>
+    </div></div>`;
+}
+function saveInsurance() {
+  const it = {
+    company: document.getElementById("f_company").value.trim(),
+    name: document.getElementById("f_name").value.trim(),
+    policyNo: document.getElementById("f_policyNo").value.trim(),
+    currency: document.getElementById("f_currency").value,
+    rate: Number(document.getElementById("f_rate").value)||0,
+    paid: Number(document.getElementById("f_paid").value)||0,
+    cashValue: Number(document.getElementById("f_cashValue").value)||0
+  };
+  if (!it.company && !it.name) { cancelEdit(); return; }
+  if (editingId === "new-insurance") data.insurances.push({ id:uid(), ...it });
+  else data.insurances = data.insurances.map(x => x.id===editingId ? { id:editingId, ...it } : x);
+  editingId = null; save(); render();
+}
+function saveFx() {
+  data.fxRate = Number(document.getElementById("fxInputUsd").value)||0;
+  data.fxRateJpy = Number(document.getElementById("fxInputJpy").value)||0;
+  save(); render();
+}
+
+/* ---- 銀行利率 ---- */
+function viewRates() {
+  let html = `<h2>銀行利率比較</h2>
+    <div class="rate-note">查詢日 2026/05/23 ・ 利率與優惠專案會變動，實際以各銀行官網為準</div>`;
+  RATES.forEach(r => {
+    html += `<div class="rate-card">
+      <div class="rate-head">
+        <span class="rate-badge" style="background:${r.color}">${r.bank}</span>
+        <span class="rate-tag">${r.tag}</span>
+      </div>
+      ${r.rows.map(([k,v]) => `<div class="rate-row"><span class="rate-k">${k}</span><span class="rate-v">${v}</span></div>`).join("")}
+      <div class="rate-mine" style="color:${r.color}">${r.note}</div>
+    </div>`;
+  });
+  return html;
+}
+
+/* ---- 通用操作 ---- */
+function startNew(kind) { editingId = "new-"+kind; render(); }
+function startEdit(id) { editingId = id; render(); }
+function cancelEdit() { editingId = null; render(); }
+function del(key, id) {
+  if (confirm("確定刪除這筆？")) {
+    data[key] = data[key].filter(x => x.id !== id);
+    save(); render();
+  }
+}
+function resetData() {
+  if (confirm("確定清除所有資料並還原成預設值？")) {
+    data = JSON.parse(JSON.stringify(SEED));
+    editingId = null; save(); render();
+  }
+}
+function exportData() {
+  const blob = new Blob([JSON.stringify(data,null,2)], { type:"application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "資產備份_" + new Date().toISOString().slice(0,10) + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importData(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const obj = JSON.parse(e.target.result);
+      if (obj && obj.deposits && obj.etfs) {
+        data = { cash:obj.cash||[], deposits:obj.deposits||[], etfs:obj.etfs||[], stocks:obj.stocks||[],
+          insurances:obj.insurances||[], fxRate:obj.fxRate==null?32.5:obj.fxRate,
+          fxRateJpy:obj.fxRateJpy==null?0.20:obj.fxRateJpy };
+        editingId = null; save(); render();
+        alert("匯入成功！");
+      } else alert("檔案格式不正確。");
+    } catch (err) { alert("讀取失敗：檔案可能損毀。"); }
+  };
+  reader.readAsText(file);
+  ev.target.value = "";
+}
+
+data = load();
+render();
+</script>
+</body>
+</html>
