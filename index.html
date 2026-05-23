@@ -1,753 +1,2602 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Annie Hsu 資產管理</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Manrope:wght@600;700;800&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Noto Sans TC', sans-serif; background: #ece8dd; color: #2c2c28; padding-bottom: 50px; }
-  .shell { max-width: 560px; margin: 0 auto; padding: 0 14px; }
-  header { display: flex; justify-content: space-between; align-items: flex-end; padding: 26px 4px 16px; flex-wrap: wrap; gap: 14px; }
-  .kicker { font-family: 'Manrope', sans-serif; font-size: 10px; letter-spacing: 3px; font-weight: 700; color: #a39e8d; }
-  h1 { font-size: 24px; font-weight: 900; margin-top: 2px; letter-spacing: -0.5px; }
-  .grand-box { background: #2c2c28; color: #fff; padding: 9px 16px; border-radius: 13px; text-align: right; }
-  .grand-label { font-size: 10px; color: #b6b1a2; letter-spacing: 1px; }
-  .grand-val { font-family: 'Manrope', sans-serif; font-size: 21px; font-weight: 800; margin-top: 1px; }
-  nav { display: flex; gap: 5px; padding: 2px 0 16px; flex-wrap: wrap; }
-  .tab { display: flex; align-items: center; gap: 4px; border: none; background: #ddd8c9; color: #76715f;
-    padding: 9px 13px; border-radius: 10px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .15s; }
-  .tab.on { background: #2c2c28; color: #fff; }
-  .tab:active { transform: scale(.96); }
-  h2 { font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
-  .sec-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 13px; }
-  .add-btn { display: flex; align-items: center; gap: 4px; border: none; color: #fff; padding: 9px 14px;
-    border-radius: 10px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all .15s; }
-  .add-btn:active { transform: scale(.96); }
-  .ghost-btn { border: 1.5px solid #d0cab9; background: #fff; color: #76715f; padding: 9px 13px;
-    border-radius: 10px; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
-  .card { background: #fff; border-radius: 14px; padding: 13px 15px; display: flex; align-items: center; gap: 11px; margin-bottom: 8px; }
-  .card-top { display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
-  .code-tag { font-family: 'Manrope', sans-serif; font-size: 13.5px; font-weight: 800; }
-  .card-name { font-size: 13px; font-weight: 700; }
-  .card-meta { font-size: 11.5px; color: #9a9586; margin-top: 3px; }
-  .card-amt { font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 700; }
-  .card-amt-sub { font-size: 10px; color: #a39e8d; }
-  .icon-btn { width: 30px; height: 30px; border-radius: 8px; background: #f4f1e9; display: flex;
-    align-items: center; justify-content: center; color: #76715f; border: none; cursor: pointer; font-size: 14px; }
-  .icon-btn:active { background: #e6e1d3; }
-  .empty { background: #fff; border-radius: 14px; padding: 30px 20px; text-align: center; color: #a39e8d; font-size: 12.5px; }
-  .total-bar { background: #2c2c28; color: #fff; border-radius: 12px; padding: 12px 17px; margin-top: 3px;
-    display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; font-weight: 700; }
-  .total-bar .big { font-weight: 800; font-size: 16px; font-family: 'Manrope', sans-serif; }
-  .edit-card { background: #fbfaf6; border-radius: 14px; padding: 14px 15px; margin-bottom: 8px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-  .field { display: flex; flex-direction: column; gap: 4px; }
-  .field-label { font-size: 11px; color: #9a9586; font-weight: 700; }
-  .field input { border: 1.5px solid #ddd8c9; border-radius: 8px; padding: 9px 10px; font-size: 13.5px;
-    background: #fff; width: 100%; font-family: inherit; }
-  .field input:focus { outline: none; border-color: #4a4a44; }
-  .edit-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 11px; }
-  .date-bar { display: flex; justify-content: space-between; align-items: baseline;
-    padding: 2px 4px 12px; }
-  .date-text { font-size: 13px; color: #76715f; font-weight: 700; }
-  .time-text { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: #2c2c28;
-    letter-spacing: 0.5px; }
-  .ov-top { background: #fff; border-radius: 18px; padding: 22px 20px; display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
-  .donut { width: 144px; height: 144px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .hole { width: 96px; height: 96px; border-radius: 50%; background: #fff; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; }
-  .hole-sm { font-size: 10.5px; color: #a39e8d; letter-spacing: 1px; }
-  .hole-big { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 800; margin-top: 2px; }
-  .ov-list { flex: 1; min-width: 195px; }
-  .ov-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0ece1; }
-  .dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
-  .ov-label { font-size: 13.5px; font-weight: 700; }
-  .ov-sub { font-size: 11.5px; color: #a39e8d; font-weight: 400; }
-  .ov-val { font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 700; }
-  .ov-pct { font-size: 11px; color: #a39e8d; }
-  .countdown-sec { background: #fff; border-radius: 18px; padding: 18px 20px; margin-top: 12px; }
-  .countdown-title { font-size: 14px; font-weight: 900; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-  .cd-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0ece1; }
-  .cd-row:last-child { border-bottom: none; }
-  .cd-left { display: flex; flex-direction: column; gap: 2px; }
-  .cd-bank { font-size: 13px; font-weight: 700; }
-  .cd-meta { font-size: 11px; color: #9a9586; }
-  .cd-right { text-align: right; }
-  .cd-days { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 800; }
-  .cd-date { font-size: 10.5px; color: #a39e8d; margin-top: 1px; }
-  .cd-pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; margin-top: 3px; }
-  .int-line { font-size: 11px; color: #3a6f5c; font-weight: 700; margin-top: 4px; }
-  .int-bar { background: #3a6f5c; color: #fff; border-radius: 12px; padding: 11px 17px; margin-top: 6px;
-    display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; }
-  .fx-box { background: #fff; border-radius: 12px; padding: 11px 15px; margin-bottom: 10px;
-    display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  .fx-label { font-size: 12px; color: #76715f; font-weight: 700; }
-  .fx-input { border: 1.5px solid #ddd8c9; border-radius: 8px; padding: 7px 10px; font-size: 14px;
-    width: 90px; text-align: right; font-family: 'Manrope', sans-serif; font-weight: 700; }
-  .fx-input:focus { outline: none; border-color: #4a4a44; }
-  .ins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 11px;
-    padding-top: 11px; border-top: 1px solid #f0ece1; }
-  .ins-cell { background: #f6f3ea; border-radius: 9px; padding: 9px 11px; }
-  .ins-cell-label { font-size: 11px; color: #9a9586; font-weight: 700; }
-  .ins-cell-usd { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 800; color: #b5894a; margin-top: 2px; }
-  .ins-cell-twd { font-size: 11.5px; color: #76715f; margin-top: 1px; }
-  .ins-note { font-size: 11px; color: #9a9586; line-height: 1.6; margin-top: 8px; padding: 0 4px; }
-  .div-line { font-size: 11px; color: #c2602e; font-weight: 700; margin-top: 11px;
-    padding-top: 10px; border-top: 1px solid #f0ece1; }
-  .div-bar { background: #c2602e; color: #fff; border-radius: 12px; padding: 11px 17px; margin-top: 6px;
-    display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; }
-  .cur-tag { background: #f0e6d2; color: #8a6a2f; font-size: 10.5px; font-weight: 700;
-    padding: 1px 7px; border-radius: 6px; }
-  .fld-select { border: 1.5px solid #ddd8c9; border-radius: 8px; padding: 9px 10px; font-size: 13.5px;
-    background: #fff; width: 100%; font-family: inherit; }
-  .fld-select:focus { outline: none; border-color: #4a4a44; }
-  .rate-note { font-size: 11px; color: #9a9586; margin: 6px 0 13px; }
-  .rate-card { background: #fff; border-radius: 14px; padding: 13px 15px; margin-bottom: 9px; }
-  .rate-head { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
-  .rate-badge { color: #fff; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 7px; }
-  .rate-tag { font-size: 11px; color: #9a9586; }
-  .rate-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f3efe4; }
-  .rate-k { font-size: 12px; color: #76715f; }
-  .rate-v { font-size: 12px; font-weight: 700; font-family: 'Manrope', sans-serif; }
-  .rate-mine { font-size: 11px; font-weight: 700; margin-top: 8px; background: #f6f3ea; padding: 6px 9px; border-radius: 8px; }
-  footer { margin-top: 22px; padding: 13px 4px 0; border-top: 1px solid #d6d1c2; }
-  .foot-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-  .foot-btn { border: 1.5px solid #cfc9b8; background: #fff; color: #5f5b4d; padding: 7px 13px;
-    border-radius: 9px; font-size: 11.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
-  .foot-note { font-size: 11px; color: #9a9586; line-height: 1.6; }
-  .hidden { display: none; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>「好媳婦」：中藥煎煮水量計算系統</title>
+    <!--
+    ═══════════════════════════════════════════════════════════
+    Google Sheets 整合設定說明
+    ═══════════════════════════════════════════════════════════
+    
+    如需啟用 Google Sheets 中央統計功能，請依照以下步驟：
+    
+    1. 建立 Google 試算表
+    2. 開啟 Google Apps Script (工具 → 指令碼編輯器)
+    3. 貼上以下程式碼：
+    
+    ───────────────────────────────────────────────────────────
+    function doPost(e) {
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+      var data = JSON.parse(e.postData.contents);
+      
+      sheet.appendRow([
+        data.employeeId,
+        data.employeeName,
+        data.date,
+        data.time,
+        data.timestamp
+      ]);
+      
+      return ContentService.createTextOutput(JSON.stringify({result: 'success'}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    ───────────────────────────────────────────────────────────
+    
+    4. 部署為網路應用程式：
+       - 點擊「部署」→「新增部署作業」
+       - 類型：網路應用程式
+       - 執行身分：我
+       - 存取權：任何人
+       - 複製網址
+    
+    5. 將網址貼到下方 SCRIPT_URL 變數中
+    
+    6. Google 試算表欄位設定：
+       A欄：員工編號
+       B欄：員工姓名
+       C欄：日期
+       D欄：時間
+       E欄：時間戳記
+    
+    ═══════════════════════════════════════════════════════════
+    -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Han Sans TC', 'Noto Sans TC', '思源黑體', sans-serif;
+            background: #1B4D3E;
+            min-height: 100vh;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1B4D3E 0%, #2C5F2D 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 0;
+            font-weight: 700;
+            font-family: 'Source Han Sans TC', 'Noto Sans TC', '思源黑體', sans-serif;
+            line-height: 1.6;
+            letter-spacing: 1px;
+            word-break: keep-all;
+        }
+
+        .header .subtitle-small {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 20px 15px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2C5F2D;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #97BC62;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 30px;
+            transition: all 0.3s;
+            font-family: 'Source Han Sans TC', 'Noto Sans TC', '思源黑體', sans-serif;
+            font-weight: bold;
+        }
+
+        /* 數字使用Arial粗體 */
+        .number-value {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+        }
+
+        .result-value {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+        }
+
+        .grid-result {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #2C5F2D;
+            box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.1);
+        }
+
+        /* 重量輸入框與搜尋框(type=text)的 focus 效果 */
+        input[id^="weight_"]:focus,
+        #herbSearchBox:focus {
+            outline: none;
+            border-color: #2196F3 !important;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+        }
+
+        input::placeholder {
+            font-size: 24px;
+            color: #999;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 16px 20px;
+            font-weight: 700;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .checkbox-group:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .special-herbs-list {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            line-height: 2;
+            color: #856404;
+        }
+
+        .special-herbs-list strong {
+            font-size: 18px;
+        }
+
+        .special-herb-checkbox {
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .special-herb-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .special-herb-checkbox label {
+            margin: 0;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .weight-input-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #4CAF50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .weight-input-item label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2C5F2D;
+            margin: 0;
+        }
+
+        .weight-input-item input {
+            width: 100px;
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2C5F2D 0%, #4A8F2E 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(44, 95, 45, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .result-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2C5F2D;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            min-height: 110px;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: #2C5F2D;
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+
+        .equipment-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .equipment-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .equipment-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .equipment-spec {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .formula-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .formula-title {
+            font-weight: 700;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .formula-text {
+            font-family: 'Courier New', monospace;
+            color: #0d47a1;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .warning-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .warning-box p {
+            color: #c62828;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .header {
+                padding: 20px 15px;
+                border-radius: 0;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+                line-height: 1.6;
+                letter-spacing: 0.5px;
+            }
+            
+            .header .subtitle-small {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+            
+            .content {
+                padding: 15px 10px;
+            }
+            
+            .section {
+                margin-bottom: 20px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            label {
+                font-size: 15px;
+                margin-bottom: 6px;
+            }
+            
+            input[type="number"],
+            input[type="text"],
+            select {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+            
+            button {
+                font-size: 16px;
+                padding: 12px;
+            }
+            
+            .result-value {
+                font-size: 24px;
+            }
+            
+            .result-label {
+                font-size: 14px;
+            }
+            
+            .result-item {
+                min-height: 90px;
+                padding: 15px 10px;
+            }
+            
+            .equipment-name {
+                font-size: 18px;
+            }
+            
+            .special-herbs-list {
+                font-size: 13px;
+                padding: 12px;
+                line-height: 1.6;
+            }
+            
+            .footer-credit.guidance {
+                font-size: 15px;
+            }
+            
+            .footer-credit.production {
+                font-size: 13px;
+            }
+            
+            .footer {
+                padding: 15px 10px;
+            }
+            
+            .footer-motto {
+                font-size: 14px;
+            }
+            
+            #totalWater {
+                font-size: 36px !important;
+            }
+            
+            #finalEquipmentName {
+                font-size: 20px !important;
+            }
+            
+            .result-card {
+                padding: 15px;
+            }
+            
+            .result-header {
+                font-size: 16px;
+            }
+            
+            .checkbox-group label {
+                font-size: 15px !important;
+            }
+            
+            .grid-result {
+                gap: 10px;
+            }
+
+            /* ===== 手機版:特殊及大體積藥材清單優化 ===== */
+            /* 藥材清單強制一排一個,卡片更寬不擠 */
+            #herbCheckboxContainer {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+                max-height: 60vh !important;
+                padding: 8px !important;
+            }
+
+            /* 搜尋框加大,手機好點 */
+            #herbSearchBox {
+                font-size: 17px !important;
+                padding: 14px 12px !important;
+            }
+
+            /* 重量輸入框在手機上加大,固定寬度不被擠壓 */
+            input[id^="weight_"] {
+                font-size: 22px !important;
+                padding: 14px 12px !important;
+                width: 110px !important;
+            }
+
+            /* 清空確認警告條:手機改直式排列 */
+            #clearConfirmBar {
+                flex-direction: column !important;
+                gap: 12px !important;
+                padding: 16px !important;
+            }
+            #clearConfirmBar > div:first-child {
+                font-size: 17px !important;
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 601px) {
+            .header h1 {
+                font-size: 36px;
+            }
+            
+            .header .subtitle-small {
+                font-size: 26px;
+            }
+            
+            .content {
+                padding: 30px;
+            }
+        }
+
+        .footer {
+            background: #f8f9fa;
+            border-top: 2px solid #2C5F2D;
+            padding: 25px 30px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .footer-credit {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .footer-credit.guidance {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .footer-credit.production {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .footer-motto {
+            color: #2C5F2D;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 12px 0 8px 0;
+        }
+
+        .footer-copyright {
+            color: #888;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+    </style>
 </head>
 <body>
-<div class="shell">
-  <header>
-    <div>
-      <div class="kicker">ASSET TRACKER</div>
-      <h1>Annie Hsu 資產管理</h1>
-    </div>
-    <div class="grand-box">
-      <div class="grand-label">投資總資產</div>
-      <div class="grand-val" id="grandTotal">NT$0</div>
-    </div>
-  </header>
-
-  <nav id="nav"></nav>
-  <main id="main"></main>
-
-  <footer>
-    <div class="foot-btns">
-      <button class="foot-btn" onclick="exportData()">匯出備份</button>
-      <button class="foot-btn" onclick="document.getElementById('importFile').click()">匯入備份</button>
-      <button class="foot-btn" onclick="resetData()">還原預設</button>
-      <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
-    </div>
-    <div class="foot-note">資料自動儲存在這台裝置的瀏覽器。換手機或清除瀏覽器資料前，請先「匯出備份」，到新裝置再「匯入備份」。</div>
-  </footer>
-</div>
-
-<script>
-const STORAGE_KEY = "asset_manager_html_v1";
-
-const SEED = {
-  cash: [
-    { id: "c1", bank: "聯邦銀行", note: "New New Bank 新戶15%活動", currency: "TWD", balance: 100000, rate: 15.0 },
-    { id: "c2", bank: "樂天銀行", note: "數位帳戶活存（1.5%無上限）", currency: "TWD", balance: 970000, rate: 1.5 },
-    { id: "c3", bank: "永豐銀行", note: "DAWHO 大戶活存（30萬享1.5%、其餘一般利率）", currency: "TWD", balance: 1500000, rate: 0.42 }
-  ],
-  deposits: [
-    { id: "d1", bank: "LINE Bank", name: "定期存款50萬-1", principal: 500000, rate: 2.05, maturity: "2027-06-21" },
-    { id: "d2", bank: "LINE Bank", name: "定期存款2", principal: 500000, rate: 2.05, maturity: "2027-06-21" },
-    { id: "d3", bank: "LINE Bank", name: "定期存款50萬3", principal: 500000, rate: 2.05, maturity: "2027-06-21" },
-    { id: "d4", bank: "樂天銀行", name: "台幣定存", principal: 200000, rate: 1.93, maturity: "2027-02-22" },
-    { id: "d5", bank: "樂天銀行", name: "台幣定存", principal: 100000, rate: 1.95, maturity: "2027-04-22" },
-    { id: "d6", bank: "樂天銀行", name: "台幣定存", principal: 200000, rate: 1.95, maturity: "2027-04-22" },
-    { id: "d7", bank: "永豐銀行", name: "立馬豐收臺定專案", principal: 1500000, rate: 1.9, maturity: "2026-08-22" },
-    { id: "d8", bank: "樂天銀行", name: "一個月期定存", principal: 1000000, rate: 1.55, maturity: "2026-06-23" }
-  ],
-  etfs: [
-    { id: "e1", code: "00878", name: "國泰永續高股息", shares: 4000, cost: 28.25, date: "2026-05-22", dividend: 2.0, payDate: "2026-07-21" }
-  ],
-  stocks: [],
-  insurances: [
-    { id: "i1", company: "中國人壽", name: "美鑫外幣利率變動型終身壽險", policyNo: "D1205192",
-      currency: "USD", paid: 3592, cashValue: 4178, rate: 3.30 }
-  ],
-  fxRate: 32.5,
-  fxRateJpy: 0.20
-};
-
-const RATES = [
-  { bank: "LINE Bank", tag: "純網銀", color: "#1d9e75",
-    rows: [["活存（一般）","約 0.6%"],["定存 6 個月","約 1.48%"],["定存 1 年期","約 1.77%"]],
-    note: "你持有 3 筆定存・2.05% 限定專案" },
-  { bank: "樂天銀行", tag: "純網銀", color: "#d85a30",
-    rows: [["活存（無上限）","1.5%"],["新戶活存 5 萬內","2.8%"],["定存 1 年期","約 1.78%"],["新戶 10 天專案","15%（5萬內）"]],
-    note: "你持有 3 筆定存・1.93%～1.95%" },
-  { bank: "永豐銀行", tag: "DAWHO 大戶", color: "#378add",
-    rows: [["大戶活存 30 萬內","1.5%"],["活存超過 30 萬","一般利率"],["換匯優利定存","優利特快車"]],
-    note: "你持有 1 筆定存 150 萬・1.90%" },
-  { bank: "聯邦銀行", tag: "New New Bank", color: "#ba7517",
-    rows: [["新戶活存 10 萬內","15%（限時）"],["舊戶活存（達任務）","最高 4%"],["舊戶活存（未達任務）","1.5%"]],
-    note: "高利率多有額度上限與任務條件" }
-];
-
-const TABS = [
-  { k: "overview", label: "總覽" },
-  { k: "cash", label: "活存" },
-  { k: "deposit", label: "台幣定存" },
-  { k: "etf", label: "ETF" },
-  { k: "stock", label: "股票" },
-  { k: "insurance", label: "保險" },
-  { k: "rates", label: "銀行利率" }
-];
-
-let data, currentTab = "overview", editingId = null;
-
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const obj = JSON.parse(raw);
-      if (!obj.cash) obj.cash = [];
-      if (!obj.insurances) obj.insurances = [];
-      if (obj.fxRate == null) obj.fxRate = 32.5;
-      if (obj.fxRateJpy == null) obj.fxRateJpy = 0.20;
-      return obj;
-    }
-  } catch (e) {}
-  return JSON.parse(JSON.stringify(SEED));
-}
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
-}
-function uid() { return Math.random().toString(36).slice(2, 9); }
-function NT(n) { return "NT$" + Math.round(Number(n) || 0).toLocaleString("zh-TW"); }
-function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
-
-function fxOf(cur) {
-  if (cur === "TWD") return 1;
-  if (cur === "JPY") return Number(data.fxRateJpy||0);
-  return Number(data.fxRate||0);
-}
-function insToTwd(it) {
-  return Number(it.cashValue||0) * fxOf(it.currency||"USD");
-}
-
-function totals() {
-  const cash = data.cash.reduce((s,x) => s + Number(x.balance||0)*fxOf(x.currency||"TWD"), 0);
-  const dep = data.deposits.reduce((s,x) => s + Number(x.principal||0), 0);
-  const etf = data.etfs.reduce((s,x) => s + Number(x.shares||0)*Number(x.cost||0), 0);
-  const stk = data.stocks.reduce((s,x) => s + Number(x.shares||0)*Number(x.cost||0), 0);
-  const ins = data.insurances.reduce((s,x) => s + insToTwd(x), 0);
-  return { cash, dep, etf, stk, ins, grand: cash+dep+etf+stk+ins };
-}
-
-function render() {
-  const t = totals();
-  document.getElementById("grandTotal").textContent = NT(t.grand);
-
-  document.getElementById("nav").innerHTML = TABS.map(tb =>
-    `<button class="tab ${tb.k===currentTab?'on':''}" onclick="setTab('${tb.k}')">${tb.label}</button>`
-  ).join("");
-
-  const main = document.getElementById("main");
-  if (currentTab === "overview") main.innerHTML = viewOverview(t);
-  else if (currentTab === "cash") main.innerHTML = viewCash();
-  else if (currentTab === "deposit") main.innerHTML = viewDeposit();
-  else if (currentTab === "etf") main.innerHTML = viewHolding("etf");
-  else if (currentTab === "stock") main.innerHTML = viewHolding("stock");
-  else if (currentTab === "insurance") main.innerHTML = viewInsurance();
-  else if (currentTab === "rates") main.innerHTML = viewRates();
-}
-
-function setTab(k) { currentTab = k; editingId = null; render(); }
-
-/* ---- 總覽 ---- */
-function viewOverview(t) {
-  const rows = [
-    { label:"活存", val:t.cash, color:"#b5894a", sub:data.cash.length+" 個帳戶" },
-    { label:"台幣定存", val:t.dep, color:"#3a6f5c", sub:data.deposits.length+" 筆" },
-    { label:"ETF", val:t.etf, color:"#c2602e", sub:data.etfs.length+" 檔" },
-    { label:"股票", val:t.stk, color:"#7a5ea8", sub:data.stocks.length+" 檔" },
-    { label:"保險", val:t.ins, color:"#7a5ea8", sub:data.insurances.length+" 張" }
-  ];
-  let acc = 0;
-  const stops = rows.map(r => {
-    const f = t.grand>0 ? r.val/t.grand : 0;
-    const s = r.color+" "+(acc*100).toFixed(2)+"% "+((acc+f)*100).toFixed(2)+"%";
-    acc += f; return s;
-  });
-  const bg = t.grand>0 ? "conic-gradient("+stops.join(",")+")" : "#e6e1d6";
-  const pct = v => t.grand>0 ? (v/t.grand*100).toFixed(1) : "0.0";
-  return `<div class="date-bar">
-      <span class="date-text" id="dateText">${dateStr()}</span>
-      <span class="time-text" id="timeText">${timeStr()}</span>
-    </div>
-    <div class="ov-top">
-    <div class="donut" style="background:${bg}">
-      <div class="hole"><div class="hole-sm">總資產</div><div class="hole-big">${NT(t.grand)}</div></div>
-    </div>
-    <div class="ov-list">
-      ${rows.map(r => `<div class="ov-row">
-        <span style="display:flex;align-items:center;gap:9px">
-          <span class="dot" style="background:${r.color}"></span>
-          <span><span class="ov-label">${r.label}</span><span class="ov-sub"> · ${r.sub}</span></span>
-        </span>
-        <span style="text-align:right">
-          <div class="ov-val">${NT(r.val)}</div><div class="ov-pct">${pct(r.val)}%</div>
-        </span>
-      </div>`).join("")}
-    </div>
-  </div>` + viewCountdown();
-}
-
-function dateStr() {
-  const d = new Date();
-  const wd = ["日","一","二","三","四","五","六"][d.getDay()];
-  return d.getFullYear() + " 年 " + (d.getMonth()+1) + " 月 " + d.getDate() + " 日　星期" + wd;
-}
-function timeStr() {
-  const d = new Date();
-  const p = n => String(n).padStart(2,"0");
-  return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
-}
-function tickClock() {
-  const dt = document.getElementById("dateText");
-  const tt = document.getElementById("timeText");
-  if (dt) dt.textContent = dateStr();
-  if (tt) tt.textContent = timeStr();
-}
-setInterval(tickClock, 1000);
-
-/* ---- 定存到期倒數 ---- */
-function viewCountdown() {
-  if (data.deposits.length === 0) return "";
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const list = data.deposits.map(d => {
-    let days = null;
-    if (d.maturity) {
-      const m = new Date(d.maturity + "T00:00:00");
-      if (!isNaN(m)) days = Math.round((m - today) / 86400000);
-    }
-    return { ...d, days };
-  }).sort((a,b) => {
-    if (a.days == null) return 1;
-    if (b.days == null) return -1;
-    return a.days - b.days;
-  });
-
-  function style(days) {
-    if (days == null) return { txt:"#a39e8d", pill:"未設定到期日", pbg:"#f0ece1", pfg:"#9a9586" };
-    if (days < 0) return { txt:"#a32d2d", pill:"已到期", pbg:"#fcebeb", pfg:"#a32d2d" };
-    if (days <= 60) return { txt:"#a32d2d", pill:"即將到期", pbg:"#fcebeb", pfg:"#a32d2d" };
-    if (days <= 180) return { txt:"#854f0b", pill:"半年內", pbg:"#faeeda", pfg:"#854f0b" };
-    return { txt:"#3a6f5c", pill:"", pbg:"", pfg:"" };
-  }
-
-  const rows = list.map(d => {
-    const s = style(d.days);
-    let daysTxt;
-    if (d.days == null) daysTxt = "—";
-    else if (d.days < 0) daysTxt = "已過期 " + Math.abs(d.days) + " 天";
-    else if (d.days === 0) daysTxt = "今天到期";
-    else daysTxt = "還有 " + d.days + " 天";
-    return `<div class="cd-row">
-      <div class="cd-left">
-        <span class="cd-bank">${esc(d.bank)} <span style="font-weight:400;color:#9a9586;font-size:11px">${esc(d.name||"")}</span></span>
-        <span class="cd-meta">${NT(d.principal)} ・ 利率 ${esc(d.rate)}% ・ 年息 ${NT(Number(d.principal||0)*Number(d.rate||0)/100)}</span>
-      </div>
-      <div class="cd-right">
-        <div class="cd-days" style="color:${s.txt}">${daysTxt}</div>
-        <div class="cd-date">${esc(d.maturity||"未設定")}</div>
-        ${s.pill ? `<span class="cd-pill" style="background:${s.pbg};color:${s.pfg}">${s.pill}</span>` : ""}
-      </div>
-    </div>`;
-  }).join("");
-
-  return `<div class="countdown-sec">
-    <div class="countdown-title">⏳ 定存到期日倒數</div>
-    ${rows}
-  </div>`;
-}
-
-/* ---- 活存 ---- */
-function viewCash() {
-  const total = data.cash.reduce((s,x)=>s+Number(x.balance||0),0);
-  const yearInt = data.cash.reduce((s,x)=>s+Number(x.balance||0)*Number(x.rate||0)/100,0);
-  let html = `<div class="sec-head"><h2>活存帳戶</h2>
-    <button class="add-btn" style="background:#b5894a" onclick="startNew('cash')">＋ 新增</button></div>`;
-  if (editingId === "new-cash") html += editCash({});
-  if (data.cash.length===0 && editingId!=="new-cash")
-    html += `<div class="empty">尚無活存帳戶。點「新增」加入。</div>`;
-  data.cash.forEach(it => {
-    if (editingId === it.id) { html += editCash(it); return; }
-    const yi = Number(it.balance||0)*Number(it.rate||0)/100;
-    const intLine = Number(it.rate||0)>0
-      ? `<div class="int-line">年利率 ${esc(it.rate)}% ・ 預估年息 ${NT(yi)}（每月約 ${NT(yi/12)}）</div>`
-      : `<div class="int-line" style="color:#a39e8d">尚未設定利率</div>`;
-    html += `<div class="card" style="flex-direction:column;align-items:stretch;gap:0">
-      <div style="display:flex;align-items:center;gap:11px">
-        <div style="flex:1">
-          <div class="card-top"><span class="code-tag" style="color:#b5894a">${esc(it.bank)}</span>
-            <span class="card-name">${esc(it.note||"活存")}</span></div>
+    <!-- 清空資料確認警告條(預設隱藏,從畫面上方滑入) -->
+    <div id="clearConfirmBar" style="
+        position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+        background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+        color: white; padding: 18px 24px;
+        box-shadow: 0 4px 20px rgba(211, 47, 47, 0.5);
+        transform: translateY(-100%); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <div style="font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 28px;">⚠️</span>
+            <span>確定要清空所有資料嗎?此動作無法復原</span>
         </div>
-        <div style="text-align:right;margin-right:4px">
-          <div class="card-amt">${NT(it.balance)}</div><div class="card-amt-sub">餘額</div></div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
-          <button class="icon-btn" onclick="del('cash','${it.id}')">🗑</button>
+        <div style="display: flex; gap: 12px;">
+            <button onclick="confirmClearForm()" style="
+                background: white; color: #b71c1c; border: none; padding: 12px 28px;
+                border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: all 0.2s;"
+                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 10px rgba(0,0,0,0.3)';"
+                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.2)';">
+                ✓ 確定清空
+            </button>
+            <button onclick="cancelClearForm()" style="
+                background: transparent; color: white; border: 2px solid white; padding: 10px 24px;
+                border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.background='rgba(255,255,255,0.15)';"
+                onmouseout="this.style.background='transparent';">
+                ✕ 取消
+            </button>
         </div>
-      </div>
-      ${intLine}
-    </div>`;
-  });
-  if (data.cash.length>0) {
-    html += `<div class="total-bar"><span>活存合計（${data.cash.length} 個帳戶）</span><span class="big">${NT(total)}</span></div>`;
-    if (yearInt>0)
-      html += `<div class="int-bar"><span>預估利息收入</span><span>每年 ${NT(yearInt)}　每月約 ${NT(yearInt/12)}</span></div>`;
-    html += `<div class="ins-note">高利活存多為限時、限額的優惠專案（如新戶 15%），活動結束後通常回到一般利率。預估年息為「整年維持此利率」的試算值，實際利息以銀行結算為準。</div>`;
-  }
-  return html;
-}
-function editCash(it) {
-  return `<div class="edit-card">
-    <div class="form-grid">
-      <label class="field"><span class="field-label">銀行/帳戶</span><input id="f_bank" value="${esc(it.bank)}" placeholder="聯邦銀行"></label>
-      <label class="field"><span class="field-label">備註說明</span><input id="f_note" value="${esc(it.note)}" placeholder="New New Bank"></label>
-      <label class="field"><span class="field-label">目前餘額</span><input id="f_balance" value="${it.balance||""}" placeholder="100000" inputmode="numeric"></label>
-      <label class="field"><span class="field-label">年利率 %</span><input id="f_rate" value="${it.rate||""}" placeholder="15.0" inputmode="decimal"></label>
     </div>
-    <div class="edit-actions">
-      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
-      <button class="add-btn" style="background:#b5894a" onclick="saveCash()">儲存</button>
-    </div></div>`;
-}
-function saveCash() {
-  const it = {
-    bank: document.getElementById("f_bank").value.trim(),
-    note: document.getElementById("f_note").value.trim(),
-    balance: Number(document.getElementById("f_balance").value)||0,
-    rate: Number(document.getElementById("f_rate").value)||0
-  };
-  if (!it.bank && !it.balance) { cancelEdit(); return; }
-  if (editingId === "new-cash") data.cash.push({ id:uid(), ...it });
-  else data.cash = data.cash.map(x => x.id===editingId ? { id:editingId, ...it } : x);
-  editingId = null; save(); render();
-}
 
-/* ---- 定存 ---- */
-function viewDeposit() {
-  const total = data.deposits.reduce((s,x)=>s+Number(x.principal||0),0);
-  const yearInt = data.deposits.reduce((s,x)=>s+Number(x.principal||0)*Number(x.rate||0)/100,0);
-  let html = `<div class="sec-head"><h2>台幣定存</h2>
-    <button class="add-btn" style="background:#3a6f5c" onclick="startNew('deposit')">＋ 新增</button></div>`;
-  if (editingId === "new-deposit") html += editDeposit({});
-  if (data.deposits.length===0 && editingId!=="new-deposit")
-    html += `<div class="empty">尚無定存。點「新增」加入。</div>`;
-  data.deposits.forEach(it => {
-    if (editingId === it.id) { html += editDeposit(it); return; }
-    const yi = Number(it.principal||0)*Number(it.rate||0)/100;
-    const mi = yi/12;
-    html += `<div class="card">
-      <div style="flex:1">
-        <div class="card-top"><span class="code-tag" style="color:#3a6f5c">${esc(it.bank)}</span>
-          <span class="card-name">${esc(it.name||"定存")}</span></div>
-        <div class="card-meta">利率 ${esc(it.rate)}% ・ 到期 ${esc(it.maturity||"—")}</div>
-        <div class="int-line">每年利息 ${NT(yi)}　每月約 ${NT(mi)}</div>
-      </div>
-      <div style="text-align:right;margin-right:4px">
-        <div class="card-amt">${NT(it.principal)}</div><div class="card-amt-sub">本金</div></div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
-        <button class="icon-btn" onclick="del('deposits','${it.id}')">🗑</button>
-      </div></div>`;
-  });
-  if (data.deposits.length>0)
-    html += `<div class="total-bar"><span>定存合計本金（${data.deposits.length} 筆）</span><span class="big">${NT(total)}</span></div>`
-      + `<div class="int-bar"><span>預估利息收入</span><span>每年 ${NT(yearInt)}　每月約 ${NT(yearInt/12)}</span></div>`;
-  return html;
-}
-function editDeposit(it) {
-  return `<div class="edit-card">
-    <div class="form-grid">
-      <label class="field"><span class="field-label">銀行</span><input id="f_bank" value="${esc(it.bank)}" placeholder="LINE Bank"></label>
-      <label class="field"><span class="field-label">名稱</span><input id="f_name" value="${esc(it.name)}" placeholder="定期存款"></label>
-      <label class="field"><span class="field-label">本金</span><input id="f_principal" value="${it.principal||""}" placeholder="500000" inputmode="numeric"></label>
-      <label class="field"><span class="field-label">年利率 %</span><input id="f_rate" value="${it.rate||""}" placeholder="2.05" inputmode="decimal"></label>
-      <label class="field"><span class="field-label">到期日</span><input id="f_maturity" value="${esc(it.maturity)}" type="date"></label>
+    <!-- 登入頁面 -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <p class="subtitle-small">台中慈濟醫院藥學部</p>
+                <div style="text-align: center; margin-top: 15px;">
+                    <div style="font-size: 56px; font-weight: 700; color: white; line-height: 1.2; margin-bottom: 8px; letter-spacing: 6px;">
+                        「好媳婦」🌿
+                    </div>
+                    <div style="font-size: 22px; font-weight: 600; color: white; opacity: 0.95;">
+                        中藥煎煮水量計算系統
+                    </div>
+                </div>
+            </div>
+            <div class="login-content">
+                <div class="section-title">員工編號</div>
+                <div style="background: #fff3cd; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #ff9800;">
+                    <p style="margin: 0; color: #e65100; font-size: 13px; line-height: 1.6;">
+                        ⚠️ 請務必先登入正確員編再開始作業，<br>
+                        　 以免因輸入錯誤導致個人紀錄無法列計。
+                    </p>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="employeeId" placeholder="請輸入員工編號" maxlength="20" style="font-size: 20px; padding: 16px; text-align: center; font-weight: 600; letter-spacing: 1px;">
+                </div>
+                <button onclick="login()" style="width: 100%; padding: 16px; background: #2C5F2D; color: white; border: none; border-radius: 8px; font-size: 23px; font-weight: 700; cursor: pointer; margin-top: 15px;">
+                    ✓ 登入系統
+                </button>
+                
+                <div style="text-align: center; margin-top: 20px; margin-bottom: 30px;">
+                    <a href="javascript:void(0)" onclick="showAdminLogin()" style="color: #666; font-size: 13px; text-decoration: none;">管理員查詢 →</a>
+                </div>
+                
+                <!-- Footer -->
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; color: #666; font-size: 12px; line-height: 1.8;">
+                    <div style="margin-bottom: 6px;"><strong>指導：</strong>陳綺華 部主任・李雅蓁 主任</div>
+                    <div style="margin-bottom: 6px;"><strong>製作：</strong>許文馨・張雅婷</div>
+                    <div style="margin-bottom: 6px; color: #2C5F2D; font-weight: 600;">合心協力・精進專業</div>
+                    <div style="opacity: 0.6; font-size: 11px;">© 2026.04 All Rights Reserved</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="edit-actions">
-      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
-      <button class="add-btn" style="background:#3a6f5c" onclick="saveDeposit()">儲存</button>
-    </div></div>`;
-}
-function saveDeposit() {
-  const it = {
-    bank: document.getElementById("f_bank").value.trim(),
-    name: document.getElementById("f_name").value.trim(),
-    principal: Number(document.getElementById("f_principal").value)||0,
-    rate: Number(document.getElementById("f_rate").value)||0,
-    maturity: document.getElementById("f_maturity").value
-  };
-  if (!it.bank && !it.principal) { cancelEdit(); return; }
-  if (editingId === "new-deposit") data.deposits.push({ id:uid(), ...it });
-  else data.deposits = data.deposits.map(x => x.id===editingId ? { id:editingId, ...it } : x);
-  editingId = null; save(); render();
-}
 
-/* ---- ETF / 股票 ---- */
-function viewHolding(kind) {
-  const isEtf = kind==="etf";
-  const list = isEtf ? data.etfs : data.stocks;
-  const key = isEtf ? "etfs" : "stocks";
-  const accent = isEtf ? "#c2602e" : "#7a5ea8";
-  const label = isEtf ? "ETF 持股" : "股票持股";
-  const total = list.reduce((s,x)=>s+Number(x.shares||0)*Number(x.cost||0),0);
-  const yearDiv = list.reduce((s,x)=>s+Number(x.shares||0)*Number(x.dividend||0),0);
-  let html = `<div class="sec-head"><h2>${label}</h2>
-    <button class="add-btn" style="background:${accent}" onclick="startNew('${kind}')">＋ 新增</button></div>`;
-  if (editingId === "new-"+kind) html += editHolding({}, kind, accent);
-  if (list.length===0 && editingId!=="new-"+kind)
-    html += `<div class="empty">尚無${isEtf?"ETF":"股票"}持股。點「新增」加入。</div>`;
-  list.forEach(it => {
-    if (editingId === it.id) { html += editHolding(it, kind, accent); return; }
-    const cost = Number(it.shares||0)*Number(it.cost||0);
-    const yd = Number(it.shares||0)*Number(it.dividend||0);
-    const yieldPct = cost>0 ? (yd/cost*100) : 0;
-    let divLine;
-    if (Number(it.dividend||0)>0) {
-      const payTxt = it.payDate ? `　下次配息日 ${esc(it.payDate)}` : "";
-      divLine = `<div class="div-line">預估年配息 ${NT(yd)}（每股 ${it.dividend} 元・殖利率約 ${yieldPct.toFixed(2)}%）${payTxt}</div>`;
-    } else {
-      divLine = `<div class="div-line" style="color:#a39e8d">尚未設定配息（編輯可填入年配息與配息日）</div>`;
-    }
-    html += `<div class="card" style="flex-direction:column;align-items:stretch;gap:0">
-      <div style="display:flex;align-items:center;gap:11px">
-        <div style="flex:1">
-          <div class="card-top"><span class="code-tag" style="color:${accent}">${esc(it.code||"—")}</span>
-            <span class="card-name">${esc(it.name||"未命名")}</span></div>
-          <div class="card-meta">${Number(it.shares||0).toLocaleString()} 股 × NT$${esc(it.cost)} ・ 購買日 ${esc(it.date||"—")}</div>
+    <!-- 管理員登入頁面 -->
+    <div id="adminLoginPage" class="login-page" style="display: none;">
+        <div class="login-container">
+            <div class="login-header">
+                <p class="subtitle-small">台中慈濟醫院藥學部</p>
+                <div style="text-align: center; margin-top: 15px;">
+                    <div style="font-size: 56px; font-weight: 700; color: white; line-height: 1.2; margin-bottom: 8px; letter-spacing: 6px;">
+                        「好媳婦」🌿
+                    </div>
+                    <div style="font-size: 22px; font-weight: 600; color: white; opacity: 0.95;">
+                        中藥煎煮水量計算系統
+                    </div>
+                </div>
+            </div>
+            <div class="login-content">
+                <div class="section-title">👤 管理員登入</div>
+                <div class="input-group">
+                    <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">帳號</label>
+                    <input type="text" id="adminAccount" placeholder="請輸入管理員帳號" style="font-size: 18px; padding: 14px; text-align: center;">
+                </div>
+                <div class="input-group">
+                    <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px;">密碼</label>
+                    <input type="password" id="adminPassword" placeholder="請輸入密碼" style="font-size: 18px; padding: 14px; text-align: center;">
+                </div>
+                <button onclick="adminLogin()" style="width: 100%; padding: 16px; background: #2C5F2D; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 15px;">
+                    ✓ 登入查詢
+                </button>
+                <div style="text-align: center; margin-top: 20px; margin-bottom: 30px;">
+                    <a href="javascript:void(0)" onclick="backToLogin()" style="color: #666; font-size: 13px; text-decoration: none;">← 返回員工登入</a>
+                </div>
+                
+                <!-- Footer -->
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; color: #666; font-size: 12px; line-height: 1.8;">
+                    <div style="margin-bottom: 6px;"><strong>指導：</strong>陳綺華 部主任・李雅蓁 主任</div>
+                    <div style="margin-bottom: 6px;"><strong>製作：</strong>許文馨・張雅婷</div>
+                    <div style="margin-bottom: 6px; color: #2C5F2D; font-weight: 600;">合心協力・精進專業</div>
+                    <div style="opacity: 0.6; font-size: 11px;">© 2026.04 All Rights Reserved</div>
+                </div>
+            </div>
         </div>
-        <div style="text-align:right;margin-right:4px">
-          <div class="card-amt">${NT(cost)}</div>
-          <div class="card-amt-sub">投入成本</div></div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
-          <button class="icon-btn" onclick="del('${key}','${it.id}')">🗑</button>
-        </div>
-      </div>
-      ${divLine}
-    </div>`;
-  });
-  if (list.length>0) {
-    html += `<div class="total-bar"><span>${label}合計投入成本</span><span class="big">${NT(total)}</span></div>`;
-    if (yearDiv>0)
-      html += `<div class="div-bar"><span>預估配息收入</span><span>每年 ${NT(yearDiv)}　每季約 ${NT(yearDiv/4)}　每月約 ${NT(yearDiv/12)}</span></div>`;
-  }
-  return html;
-}
-function editHolding(it, kind, accent) {
-  const isEtf = kind==="etf";
-  return `<div class="edit-card">
-    <div class="form-grid">
-      <label class="field"><span class="field-label">代號</span><input id="f_code" value="${esc(it.code)}" placeholder="00878"></label>
-      <label class="field"><span class="field-label">名稱</span><input id="f_name" value="${esc(it.name)}" placeholder="國泰永續高股息"></label>
-      <label class="field"><span class="field-label">股數</span><input id="f_shares" value="${it.shares||""}" placeholder="4000" inputmode="numeric"></label>
-      <label class="field"><span class="field-label">成本/股</span><input id="f_cost" value="${it.cost||""}" placeholder="28.25" inputmode="decimal"></label>
-      <label class="field"><span class="field-label">購買日</span><input id="f_date" value="${esc(it.date)}" type="date"></label>
-      <label class="field"><span class="field-label">年配息/股（元）</span><input id="f_dividend" value="${it.dividend||""}" placeholder="2.0" inputmode="decimal"></label>
-      <label class="field"><span class="field-label">下次配息日</span><input id="f_payDate" value="${esc(it.payDate)}" type="date"></label>
     </div>
-    <div class="edit-actions">
-      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
-      <button class="add-btn" style="background:${accent}" onclick="saveHolding('${kind}')">儲存</button>
-    </div></div>`;
-}
-function saveHolding(kind) {
-  const it = {
-    code: document.getElementById("f_code").value.trim(),
-    name: document.getElementById("f_name").value.trim(),
-    shares: Number(document.getElementById("f_shares").value)||0,
-    cost: Number(document.getElementById("f_cost").value)||0,
-    date: document.getElementById("f_date").value,
-    dividend: Number(document.getElementById("f_dividend").value)||0,
-    payDate: document.getElementById("f_payDate").value
-  };
-  const key = kind==="etf" ? "etfs" : "stocks";
-  if (!it.code && !it.name) { cancelEdit(); return; }
-  if (editingId === "new-"+kind) data[key].push({ id:uid(), ...it });
-  else data[key] = data[key].map(x => x.id===editingId ? { id:editingId, ...it } : x);
-  editingId = null; save(); render();
-}
 
-/* ---- 保險 ---- */
-const CUR_SYM = { USD: "US$", TWD: "NT$", JPY: "JP¥" };
-const CUR_NAME = { USD: "美元", TWD: "台幣", JPY: "日幣" };
+    <!-- 管理員統計頁面 -->
+    <div id="adminPage" class="login-page" style="display: none;">
+        <div class="container" style="max-width: 1000px; margin: 30px auto;">
+            <div class="header">
+                <p class="subtitle-small">台中慈濟醫院藥學部</p>
+                <h1>「好媳婦」管理後台</h1>
+            </div>
+            <div class="content">
+                <!-- Tab切換 -->
+                <div style="display: flex; gap: 0; margin-bottom: 20px; border-bottom: 2px solid #ddd;">
+                    <button id="statsTab" onclick="showTab('stats')" style="padding: 12px 30px; background: #2C5F2D; color: white; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 15px; font-weight: 700;">
+                        📊 使用統計
+                    </button>
+                    <button id="employeeTab" onclick="showTab('employee')" style="padding: 12px 30px; background: #f5f5f5; color: #666; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 15px; font-weight: 700;">
+                        👥 員工維護
+                    </button>
+                </div>
 
-function viewInsurance() {
-  let html = `<div class="sec-head"><h2>保險</h2>
-    <button class="add-btn" style="background:#b5894a" onclick="startNew('insurance')">＋ 新增</button></div>`;
-  html += `<div class="fx-box">
-    <span class="fx-label">美元匯率 1 USD =</span>
-    <input class="fx-input" id="fxInputUsd" value="${Number(data.fxRate||0)}" inputmode="decimal" onchange="saveFx()">
-  </div>`;
-  html += `<div class="fx-box">
-    <span class="fx-label">日幣匯率 1 JPY =</span>
-    <input class="fx-input" id="fxInputJpy" value="${Number(data.fxRateJpy||0)}" inputmode="decimal" onchange="saveFx()">
-  </div>`;
-  if (editingId === "new-insurance") html += editInsurance({});
-  if (data.insurances.length===0 && editingId!=="new-insurance")
-    html += `<div class="empty">尚無保單。點「新增」加入。</div>`;
+                <!-- 使用統計頁面 -->
+<div id="statsSection">
+                    <div class="section" style="text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📊</div>
+                        <h2 style="color: #2C5F2D; margin-bottom: 15px; font-size: 24px;">使用統計查詢</h2>
+                        <p style="color: #666; margin-bottom: 30px; font-size: 15px; line-height: 1.6;">
+                            所有使用紀錄已整合至 Google 試算表<br>
+                            點擊下方按鈕即可查看完整統計資料
+                        </p>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;">
+                            <button onclick="openGoogleSheets()" style="padding: 16px 40px; background: linear-gradient(135deg, #0F9D58 0%, #0A7E3E 100%); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 157, 88, 0.3); transition: all 0.3s;">
+                                📊 開啟 Google 試算表統計
+                            </button>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <button onclick="viewLocalStats()" style="padding: 12px 30px; background: #757575; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                                💾 查看本機統計（備用）
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 30px; padding: 20px; background: #f0f7f4; border-radius: 8px; border-left: 4px solid #2C5F2D; text-align: left;">
+                            <div style="font-size: 14px; color: #2C5F2D; font-weight: 600; margin-bottom: 10px;">💡 統計功能說明</div>
+                            <div style="font-size: 13px; color: #666; line-height: 1.8;">
+                                <strong>📊 Google 試算表統計（推薦）：</strong><br>
+                                • 顯示所有裝置、所有員工的完整使用紀錄<br>
+                                • 自動統計使用次數、每日使用量、尖峰時段<br>
+                                • 提供圖表、樞紐分析表等視覺化工具<br>
+                                <br>
+                                <strong>💾 本機統計：</strong><br>
+                                • 僅顯示此電腦、此瀏覽器的使用紀錄<br>
+                                • 可離線查詢、日期篩選、CSV匯出
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 25px;">
+                            <button onclick="logout()" style="padding: 10px 24px; background: #666; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                登出
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 本機統計區域（隱藏） -->
+                    <div id="localStatsSection" style="display: none;">
+                        <div style="margin-bottom: 20px;">
+                            <button onclick="backToStatsHome()" style="padding: 8px 16px; background: #757575; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                ← 返回統計首頁
+                            </button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <div>
+                                    <label style="font-size: 13px; color: #666; margin-bottom: 3px; display: block;">開始日期</label>
+                                    <input type="date" id="startDate" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 13px; color: #666; margin-bottom: 3px; display: block;">結束日期</label>
+                                    <input type="date" id="endDate" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                                </div>
+                                <button onclick="filterStats()" style="padding: 9px 20px; background: #2C5F2D; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 18px;">
+                                    🔍 篩選
+                                </button>
+                                <button onclick="resetFilter()" style="padding: 9px 20px; background: #757575; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 18px;">
+                                    ↺ 全部
+                                </button>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 18px;">
+                                <button onclick="exportCSV()" style="padding: 9px 20px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                    📥 匯出CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-title">📊 本機使用次數統計</div>
+                            <div id="statsContent" style="margin-top: 15px;">
+                                <!-- 統計內容會動態插入 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-  let totalTwd = 0, paidTwd = 0;
-  data.insurances.forEach(it => {
-    if (editingId === it.id) { html += editInsurance(it); return; }
-    const cur = it.currency || "USD";
-    const sym = CUR_SYM[cur] || "";
-    const cv = Number(it.cashValue||0);
-    const paid = Number(it.paid||0);
-    const rate = fxOf(cur);
-    totalTwd += cv * rate;
-    paidTwd += paid * rate;
-    const twdLine = v => cur==="TWD" ? "" : `<div class="ins-cell-twd">≈ ${NT(v*rate)}</div>`;
-    html += `<div class="card" style="flex-direction:column;align-items:stretch;gap:0">
-      <div style="display:flex;align-items:center;gap:11px">
-        <div style="flex:1">
-          <div class="card-top"><span class="code-tag" style="color:#b5894a">${esc(it.company)}</span>
-            <span class="card-name">${esc(it.name||"保單")}</span></div>
-          <div class="card-meta">保單號 ${esc(it.policyNo||"—")} ・ 宣告利率 ${esc(it.rate)}% ・ <span class="cur-tag">${CUR_NAME[cur]||cur}</span></div>
+                <!-- 員工維護頁面 -->
+                <div id="employeeSection" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div style="display: flex; gap: 10px; align-items: flex-end;">
+                            <div>
+                                <label style="font-size: 13px; color: #666; margin-bottom: 3px; display: block;">員工編號</label>
+                                <input type="text" id="newEmployeeId" placeholder="請輸入員工編號" maxlength="20" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; width: 150px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 13px; color: #666; margin-bottom: 3px; display: block;">姓名</label>
+                                <input type="text" id="newEmployeeName" placeholder="請輸入姓名" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; width: 120px;">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #f8f9fa; border-radius: 5px;">
+                                <input type="checkbox" id="newEmployeeIsAdmin" style="width: 18px; height: 18px; cursor: pointer;">
+                                <label for="newEmployeeIsAdmin" style="font-size: 14px; color: #666; cursor: pointer; margin: 0;">主管</label>
+                            </div>
+                            <button onclick="addEmployee()" style="padding: 9px 20px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                ➕ 新增
+                            </button>
+                        </div>
+                        <button onclick="logout()" style="padding: 9px 20px; background: #666; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                            登出
+                        </button>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">👥 員工名單 (<span id="employeeCount">0</span>人)</div>
+                        <div id="employeeListContent" style="margin-top: 15px;">
+                            <!-- 員工清單會動態插入 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="margin-top: 40px; padding: 25px 30px; background: #f8f9fa; border-top: 2px solid #2C5F2D; text-align: center;">
+                <div style="margin-bottom: 8px; color: #333; font-size: 14px;"><strong>指導：</strong>陳綺華 部主任・李雅蓁 主任</div>
+                <div style="margin-bottom: 8px; color: #333; font-size: 14px;"><strong>製作：</strong>許文馨・張雅婷</div>
+                <div style="margin-bottom: 10px; color: #2C5F2D; font-size: 15px; font-weight: 600;">合心協力・精進專業</div>
+                <div style="color: #999; font-size: 12px;">© 2026.04 All Rights Reserved</div>
+            </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <button class="icon-btn" onclick="startEdit('${it.id}')">✎</button>
-          <button class="icon-btn" onclick="del('insurances','${it.id}')">🗑</button>
-        </div>
-      </div>
-      <div class="ins-grid">
-        <div class="ins-cell">
-          <div class="ins-cell-label">已繳保費</div>
-          <div class="ins-cell-usd">${sym}${paid.toLocaleString()}</div>
-          ${twdLine(paid)}
-        </div>
-        <div class="ins-cell">
-          <div class="ins-cell-label">目前保價金</div>
-          <div class="ins-cell-usd">${sym}${cv.toLocaleString()}</div>
-          ${twdLine(cv)}
-        </div>
-      </div>
-    </div>`;
-  });
-  if (data.insurances.length>0) {
-    html += `<div class="total-bar"><span>保價金合計（換算台幣）</span><span class="big">${NT(totalTwd)}</span></div>`;
-    html += `<div class="ins-note">已繳保費合計約 ${NT(paidTwd)}（各幣別依上方匯率換算）。保價金為非保證之預估值，實際解約金請以保險公司保戶網站或客服為準。</div>`;
-  }
-  return html;
-}
-function editInsurance(it) {
-  const cur = it.currency || "USD";
-  const opt = (v,label) => `<option value="${v}" ${cur===v?"selected":""}>${label}</option>`;
-  return `<div class="edit-card">
-    <div class="form-grid">
-      <label class="field"><span class="field-label">保險公司</span><input id="f_company" value="${esc(it.company)}" placeholder="中國人壽"></label>
-      <label class="field"><span class="field-label">保單名稱</span><input id="f_name" value="${esc(it.name)}" placeholder="美鑫終身壽險"></label>
-      <label class="field"><span class="field-label">保單號碼</span><input id="f_policyNo" value="${esc(it.policyNo)}" placeholder="D1205192"></label>
-      <label class="field"><span class="field-label">幣別</span><select id="f_currency" class="fld-select">${opt("USD","美元 USD")}${opt("TWD","台幣 TWD")}${opt("JPY","日幣 JPY")}</select></label>
-      <label class="field"><span class="field-label">宣告利率 %</span><input id="f_rate" value="${it.rate||""}" placeholder="3.30" inputmode="decimal"></label>
-      <label class="field"><span class="field-label">已繳保費</span><input id="f_paid" value="${it.paid||""}" placeholder="3592" inputmode="decimal"></label>
-      <label class="field"><span class="field-label">目前保價金</span><input id="f_cashValue" value="${it.cashValue||""}" placeholder="4178" inputmode="decimal"></label>
     </div>
-    <div class="edit-actions">
-      <button class="ghost-btn" onclick="cancelEdit()">取消</button>
-      <button class="add-btn" style="background:#b5894a" onclick="saveInsurance()">儲存</button>
-    </div></div>`;
-}
-function saveInsurance() {
-  const it = {
-    company: document.getElementById("f_company").value.trim(),
-    name: document.getElementById("f_name").value.trim(),
-    policyNo: document.getElementById("f_policyNo").value.trim(),
-    currency: document.getElementById("f_currency").value,
-    rate: Number(document.getElementById("f_rate").value)||0,
-    paid: Number(document.getElementById("f_paid").value)||0,
-    cashValue: Number(document.getElementById("f_cashValue").value)||0
-  };
-  if (!it.company && !it.name) { cancelEdit(); return; }
-  if (editingId === "new-insurance") data.insurances.push({ id:uid(), ...it });
-  else data.insurances = data.insurances.map(x => x.id===editingId ? { id:editingId, ...it } : x);
-  editingId = null; save(); render();
-}
-function saveFx() {
-  data.fxRate = Number(document.getElementById("fxInputUsd").value)||0;
-  data.fxRateJpy = Number(document.getElementById("fxInputJpy").value)||0;
-  save(); render();
-}
 
-/* ---- 銀行利率 ---- */
-function viewRates() {
-  let html = `<h2>銀行利率比較</h2>
-    <div class="rate-note">查詢日 2026/05/23 ・ 利率與優惠專案會變動，實際以各銀行官網為準</div>`;
-  RATES.forEach(r => {
-    html += `<div class="rate-card">
-      <div class="rate-head">
-        <span class="rate-badge" style="background:${r.color}">${r.bank}</span>
-        <span class="rate-tag">${r.tag}</span>
-      </div>
-      ${r.rows.map(([k,v]) => `<div class="rate-row"><span class="rate-k">${k}</span><span class="rate-v">${v}</span></div>`).join("")}
-      <div class="rate-mine" style="color:${r.color}">${r.note}</div>
-    </div>`;
-  });
-  return html;
-}
+    <!-- 主要計算系統 -->
+    <div id="mainApp" style="display: none;">
+    <div class="container">
+        <div class="header">
+            <p class="subtitle-small">台中慈濟醫院藥學部</p>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 36px; font-weight: 700; color: white; line-height: 1.2; margin-bottom: 3px; letter-spacing: 4px;">
+                    「好媳婦」🌿
+                </div>
+                <div style="font-size: 14px; font-weight: 600; color: white; opacity: 0.95;">
+                    中藥煎煮水量計算系統
+                </div>
+            </div>
+            <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+                <div style="display: flex; align-items: baseline; gap: 10px;">
+                    <span id="currentEmployeeId" style="font-size: 11px; font-weight: 600; opacity: 0.9; color: white;">000018371</span>
+                    <span id="currentEmployeeName" style="font-size: 16px; font-weight: 700; color: white; letter-spacing: 2px;">姓名</span>
+                </div>
+                <button onclick="employeeLogout()" style="padding: 8px 14px; background: #d32f2f; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 4px rgba(211, 47, 47, 0.3);">
+                    登出切換
+                </button>
+            </div>
+        </div>
 
-/* ---- 通用操作 ---- */
-function startNew(kind) { editingId = "new-"+kind; render(); }
-function startEdit(id) { editingId = id; render(); }
-function cancelEdit() { editingId = null; render(); }
-function del(key, id) {
-  if (confirm("確定刪除這筆？")) {
-    data[key] = data[key].filter(x => x.id !== id);
-    save(); render();
-  }
-}
-function resetData() {
-  if (confirm("確定清除所有資料並還原成預設值？")) {
-    data = JSON.parse(JSON.stringify(SEED));
-    editingId = null; save(); render();
-  }
-}
-function exportData() {
-  const blob = new Blob([JSON.stringify(data,null,2)], { type:"application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "資產備份_" + new Date().toISOString().slice(0,10) + ".json";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-function importData(ev) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const obj = JSON.parse(e.target.result);
-      if (obj && obj.deposits && obj.etfs) {
-        data = { cash:obj.cash||[], deposits:obj.deposits||[], etfs:obj.etfs||[], stocks:obj.stocks||[],
-          insurances:obj.insurances||[], fxRate:obj.fxRate==null?32.5:obj.fxRate,
-          fxRateJpy:obj.fxRateJpy==null?0.20:obj.fxRateJpy };
-        editingId = null; save(); render();
-        alert("匯入成功！");
-      } else alert("檔案格式不正確。");
-    } catch (err) { alert("讀取失敗：檔案可能損毀。"); }
-  };
-  reader.readAsText(file);
-  ev.target.value = "";
-}
+        <div class="content">
+            <!-- 基本資料 -->
+            <div class="section">
+                <div class="section-title">📋 請輸入中藥代煎藥品資料</div>
+                
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>每日頻率</label>
+                        <select id="frequency">
+                            <option value="1">QD - 每日一次</option>
+                            <option value="2" selected>BID - 每日兩次</option>
+                            <option value="3">TID - 每日三次</option>
+                            <option value="4">QID - 每日四次</option>
+                            <option value="1">QN - 每晚一次</option>
+                            <option value="24">Q1H - 每1小時一次</option>
+                            <option value="12">Q2H - 每2小時一次</option>
+                            <option value="8">Q3H - 每3小時一次</option>
+                            <option value="6">Q4H - 每4小時一次</option>
+                            <option value="4">Q6H - 每6小時一次</option>
+                            <option value="3">Q8H - 每8小時一次</option>
+                            <option value="2">Q12H - 每12小時一次</option>
+                        </select>
+                    </div>
 
-data = load();
-render();
-</script>
+                    <div class="input-group">
+                        <label>天數</label>
+                        <input type="number" id="days" min="1" max="60" value="7" placeholder="請輸入天數">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>單包水量（ml）</label>
+                        <input type="number" id="waterPerPack" min="1" placeholder="請輸入單包水量">
+                    </div>
+
+                    <div class="input-group">
+                        <label>藥材總重（g）</label>
+                        <input type="number" id="herbWeight" min="1" placeholder="請輸入藥材總重量（g）">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>是否包含特殊及大體積藥材</label>
+                    <select id="herbType" onchange="toggleSpecialHerbs()">
+                        <option value="normal" selected>否 - 一般藥材</option>
+                        <option value="special">是 - 包含特殊及大體積藥材</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 第一階段：特殊藥材勾選（選擇「是」時顯示） -->
+            <div class="section" id="specialHerbsSelectSection" style="display: none;">
+                <div class="section-title">🌿 特殊及大體積藥材確認（勾選）</div>
+                
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p style="color: #856404; font-size: 14px; margin: 0;">
+                        請勾選處方中包含的特殊及大體積藥材，可用搜尋框過濾。勾選完畢後點擊「確認勾選」按鈕。
+                    </p>
+                </div>
+
+                <!-- 搜尋框 -->
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="herbSearchBox" placeholder="🔍 輸入代碼或藥材名稱搜尋(例如: RA07 或 青蒿)" 
+                           oninput="filterHerbList()" 
+                           style="width: 100%; padding: 14px; border: 2px solid #4CAF50; border-radius: 8px; font-size: 18px; box-sizing: border-box;">
+                    <div id="herbSearchResultInfo" style="margin-top: 6px; font-size: 14px; color: #666;"></div>
+                </div>
+
+                <!-- 已勾選預覽(浮動顯示) -->
+                <div id="selectedHerbsPreview" style="display: none; background: #e8f5e9; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #4CAF50;">
+                    <div style="font-size: 15px; color: #2e7d32; font-weight: 700; margin-bottom: 6px;">已勾選 <span id="selectedCount">0</span> 項:</div>
+                    <div id="selectedHerbsList" style="font-size: 16px; color: #1b5e20; line-height: 1.7; font-weight: 600;"></div>
+                </div>
+
+                <!-- 藥材清單(JS 動態渲染) - 固定一排 3 個 -->
+                <div id="herbCheckboxContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; max-height: 550px; overflow-y: auto; padding: 10px; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0;">
+                    <!-- 由 renderHerbList() 動態生成 -->
+                </div>
+
+                <div style="background: #e3f2fd; padding: 10px 15px; border-radius: 8px; margin-bottom: 12px;">
+                    <p style="color: #1565c0; font-size: 14px; margin: 0; line-height: 1.5;">
+                        💡 勾選後在右側輸入重量(錢),系統自動換算為克(1錢=3.75克)
+                    </p>
+                </div>
+
+                <button onclick="calculateRatio()" style="width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;">
+                    📊 計算佔比
+                </button>
+            </div>
+
+            <!-- 佔比結果 -->
+            <div id="ratioResultSection" style="display: none; margin-top: 20px;">
+                <div style="padding: 20px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 12px; border-left: 5px solid #4CAF50;">
+                    <div style="font-size: 18px; font-weight: 700; color: #2C5F2D; margin-bottom: 10px;">
+                        📊 特殊及大體積藥材佔比
+                    </div>
+                    <div style="font-size: 32px; font-weight: 700; color: #1B5E20; font-family: 'Arial', sans-serif; margin-bottom: 10px;">
+                        <span id="ratioPercentage">0</span>%
+                    </div>
+                    <div style="font-size: 16px; color: #2E7D32; font-weight: 700; margin-bottom: 5px;">
+                        <span id="ratioCategory">-</span>
+                    </div>
+                    <div style="font-size: 14px; color: #558B2F;">
+                        吸水係數：<span id="coeffValue" style="font-size: 18px; font-weight: 700;">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 特殊及大體積藥材說明(預設隱藏) -->
+            <div class="section" id="herbInfoSection" style="display: none;">
+                <div class="special-herbs-list">
+                    <strong>特殊及大體積藥材吸水係數:</strong><br>
+                    📌 沒有勾選任何項目 → 係數 <strong>2.0</strong>(一般藥材)<br>
+                    📌 有勾選,且佔比 <strong>&lt; 30%</strong> → 係數 <strong>2.0</strong>(視同一般藥材)<br>
+                    📌 有勾選,且佔比 <strong>≥ 30%</strong> → 係數 <strong>4.0</strong>
+                </div>
+            </div>
+
+            <button onclick="calculate()">💧 計算加水量 & 煎煮容器選擇</button>
+
+            <!-- 結果顯示區 -->
+            <div id="result" class="result">
+                <!-- 加水量計算 -->
+                <div class="result-card">
+                    <div class="result-header">💧 總加水量</div>
+                    
+                    <div style="text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #2C5F2D 0%, #4CAF50 100%); border-radius: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(44, 95, 45, 0.3);">
+                        <div style="font-size: 48px; font-weight: 700; color: white; font-family: 'Arial', sans-serif;" id="totalWater">-</div>
+                        <div style="font-size: 16px; color: white; margin-top: 8px; font-weight: 600; opacity: 0.95;">需加入的總水量</div>
+                    </div>
+
+                    <div class="grid-result">
+                        <div class="result-item">
+                            <div class="result-label">估算體積（藥材+水）</div>
+                            <div class="result-value" id="estimatedVolume">-</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-label">藥材吸水量</div>
+                            <div class="result-value" id="absorption">-</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-label">總包數</div>
+                            <div class="result-value" id="totalPacks">-</div>
+                        </div>
+
+                        <div class="result-item">
+                            <div class="result-label">藥液產出量</div>
+                            <div class="result-value" id="liquidOutput">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="formula-box">
+                    <div class="formula-title">📐 計算公式</div>
+                    <div class="formula-text" id="formulaText">-</div>
+                </div>
+
+                <div class="warning-box" id="warningBox" style="display: none;">
+                    <p id="warningText"></p>
+                </div>
+
+                <!-- 正常容器顯示（沒有警示時） -->
+                <div id="normalEquipment" style="display: none; margin-top: 20px;">
+                    <div style="padding: 30px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 12px; border-left: 6px solid #4CAF50;">
+                        <div style="color: #2C5F2D; font-size: 28px; font-weight: 700; margin-bottom: 15px; text-align: center;">
+                            🥘 建議煎煮容器
+                        </div>
+                        <div style="color: #1B5E20; font-size: 18px; margin-bottom: 20px; text-align: center; font-weight: 600; line-height: 1.8;">
+                            估算體積佔容器容量：<span id="normalRatio" style="font-size: 26px; font-weight: 700; font-family: 'Arial', sans-serif; color: #2E7D32;">-</span>%
+                            <br>
+                            <span style="font-size: 17px; color: #4CAF50; font-weight: 700;">✓ 未超過80%，容量適中</span>
+                        </div>
+                        <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                                <div id="normalEquipmentIcon" style="font-size: 56px;">🔥</div>
+                                <div>
+                                    <div id="normalEquipmentName" style="color: #2C5F2D; font-size: 36px; font-weight: 700; margin-bottom: 8px;">
+                                        -
+                                    </div>
+                                    <div id="normalEquipmentSpec" style="color: #666; font-size: 18px; font-family: 'Arial', sans-serif; font-weight: 600;">
+                                        -
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自動容量警示（只在超過80%時顯示） -->
+                <div id="autoCapacityWarning" style="display: none; margin-top: 20px;">
+                    <div style="padding: 30px; background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-radius: 12px; border-left: 6px solid #f44336; box-shadow: 0 4px 15px rgba(244, 67, 54, 0.2);">
+                        <div style="color: #c62828; font-size: 32px; font-weight: 700; margin-bottom: 20px; text-align: center;">
+                            ⚠️ 容量警示
+                        </div>
+                        <div style="color: #d32f2f; font-size: 22px; margin-bottom: 25px; line-height: 1.8; text-align: center; font-weight: 700;">
+                            估算體積超過建議器具的80%容量<br>
+                            （<span id="warningRatio" style="font-size: 28px; font-family: 'Arial', sans-serif;">-</span>%）<br>
+                            系統已自動改用更大容器
+                        </div>
+                        <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="color: #666; font-size: 18px; margin-bottom: 15px; text-align: center; font-weight: 700;">
+                                📦 建議使用容器
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 15px;">
+                                <div id="warningEquipmentIcon" style="font-size: 56px;">🔥</div>
+                                <div>
+                                    <div id="warningEquipmentName" style="color: #2C5F2D; font-size: 36px; font-weight: 700; margin-bottom: 8px;">
+                                        -
+                                    </div>
+                                    <div id="warningEquipmentSpec" style="color: #666; font-size: 18px; font-family: 'Arial', sans-serif; font-weight: 600;">
+                                        -
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 清空資料按鈕 -->
+                <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #ddd;">
+                    <button onclick="clearForm()" style="background: linear-gradient(135deg, #757575 0%, #616161 100%); color: white; border: none; padding: 16px 40px; border-radius: 10px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: all 0.3s;">
+                        🔄 清空資料・繼續下一筆計算
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-credit guidance">
+            <strong>指導：</strong>陳綺華 部主任・李雅蓁 主任
+        </div>
+        <div class="footer-credit production">
+            <strong>製作：</strong>許文馨・張雅婷
+        </div>
+        <div class="footer-motto">
+            合心協力・精進專業
+        </div>
+        <div style="margin: 15px 0;">
+            <a href="https://forms.gle/39oFuMavSMjeLob19" target="_blank" style="display: inline-block; padding: 10px 20px; background: rgba(255, 249, 230, 0.95); color: #D2691E; border: 2px solid rgba(244, 164, 96, 0.8); border-radius: 10px; font-size: 15px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: all 0.3s;">
+                💌 好媳婦操作回饋
+            </a>
+        </div>
+        <div class="footer-copyright">
+            © 2026.04 All Rights Reserved
+        </div>
+    </div>
+
+    <script>
+        // 設備規格
+        const equipment = [
+            { name: '啞巴媳婦（小）', icon: '🫖', capacity: 2000, minWater: 1500 },
+            { name: '啞巴媳婦（大）', icon: '🍲', capacity: 3000, minWater: 2000 },
+            { name: '壓力鍋（小）', icon: '🥘', capacity: 10000, minWater: 7000 },
+            { name: '壓力鍋（大）', icon: '🍳', capacity: 12000, minWater: 9000 },
+            { name: '小型煎藥機（小1）', icon: '⚙️', capacity: 14000, minWater: 10000 },
+            { name: '中型煎藥機', icon: '🏭', capacity: 20000, minWater: 13000 },
+            { name: '大型煎藥機', icon: '🏭', capacity: 55000, minWater: 40000 }
+        ];
+
+        function toggleCheckbox(id) {
+            const checkbox = document.getElementById(id);
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change'));
+        }
+
+        // ============================================================
+        // 特殊及大體積藥材清單 (代碼, 藥材名)
+        // ============================================================
+        const HERB_LIST = [
+            ["RA07","青蒿"],["RA09","敗醬草"],["RA10","藿香"],["RA11","佩蘭"],
+            ["RB09","枇杷葉"],["RB10","龍膽草"],["RB11","艾葉"],
+            ["RC11","紫蘇葉"],["RD10","魚腥草"],
+            ["RE08","雞血藤"],["RE09","白花蛇舌草"],["RE10","半支蓮"],["RE11","蒲公英"],
+            ["RF09","杜仲炒"],["RF10","益母草"],
+            ["RG08","厚朴筒"],["RG11","茵陳綿"],
+            ["RH10","荊芥"],["RH11","旱蓮草"],
+            ["RI09","旋覆花"],["RI10","淫羊藿"],["RI11","桑葉"],
+            ["RJ09","夏枯花草"],["RJ10","淡竹葉"],["RJ11","蟬蛻"],
+            ["RK01","蘆根"],["RK09","絲瓜絡"],["RK10","通草"],["RK11","玉米鬚"],
+            ["RL02","白豆蔻"],["RL09","釘地蜈蚣"],["RL10","丁豎朽"],["RL11","皂刺"],
+            ["SA01","王不留行"],
+            ["SB07","羌活"],["SB12","紫草"],
+            ["SC07","雙鉤藤"],["SC08","五靈脂"],["SC13","升麻"],
+            ["SD06","豬苓"],["SD07","劉寄奴"],["SD12","蔓荊子"],["SD13","白英"],["SD14","故紙花"],
+            ["SE03","銀花"],["SE12","茜草"],
+            ["TA04","瞿麥"],["TA07","龍葵"],["TA09","荷葉"],["TA10","澤蘭-正"],["TA11","豨薟草"],
+            ["TA12","小本七層塔"],["TA14","白尾蜈蚣"],["TA15","石上柏"],["TA17","麻芝糊草"],
+            ["TB06","仙鶴草"],["TB10","穿心蓮"],["TB12","伸筋草"],["TB14","燈心草"],
+            ["TB16","黑荊芥"],["TB17","馬齒莧"],["TB18","金錢薄荷"],
+            ["VA07","徐長卿"],["VA08","貫眾"],["VA09","露蜂房"],
+            ["WA38","紅花川W26"],["WA71","栝蔞實W51"],["WA73","玉竹W46"],
+            ["WA77","菊花W12"],["WA79","佛手W32"],["WA85","守宮W50"],
+            ["WB11","薄荷RC09"],["WB21","天麻RG10"],["WB28","靈芝SD15"],["WB29","土茯苓VA16"],
+            ["WD11","雞內金TB11"],["WE25","桔梗RC08"],["WX11","★蟾蜍乾W49"],
+            // 原 20 種裡新清單沒有的藥材(自訂代碼 X01~X14)
+            ["WA83","防風"],["RH02","北沙參"],["RI06","山藥"],["WA35","黨參"],
+            ["WA45","天門冬"],["WA61","麥門冬"],["RJ01","胖大海"],["SB09","葶藶子"],
+            ["SB11","紫蘇子"],["SC10","車前子"],["SE02","菟絲子"],["WA81","薏苡仁"],
+            ["WA43","赤小豆"],["WA41","炒麥芽"]
+        ];
+
+        // 將 (code, name) 配對轉成可作為 HTML id 的 key
+        function herbKey(code) {
+            return code;  // 代碼本身就是唯一的,直接當 key
+        }
+
+        // 渲染整個藥材勾選清單(勾選 + 重量輸入合併一行)
+        function renderHerbList(filterText) {
+            const container = document.getElementById('herbCheckboxContainer');
+            if (!container) return;
+
+            const lower = (filterText || '').trim().toLowerCase();
+            const filtered = HERB_LIST.filter(([code, name]) => {
+                if (!lower) return true;
+                return code.toLowerCase().includes(lower) || name.toLowerCase().includes(lower);
+            });
+
+            // 保留現有的勾選狀態和重量輸入值(切換搜尋時不能弄丟)
+            // 已存在的勾選狀態:從 window._selectedHerbCodes 取得
+            // 已存在的重量:從現有 input 抓取(只抓已勾選的,避免空 input 污染暫存)
+            if (!window._herbWeights) window._herbWeights = {};
+            container.querySelectorAll('input[id^="weight_"]').forEach(inp => {
+                const code = inp.dataset.code;
+                if (code && window._selectedHerbCodes && window._selectedHerbCodes.has(code)) {
+                    // 只同步「已勾選」的項目;沒勾選的 disabled input 不要覆蓋暫存
+                    window._herbWeights[code] = inp.value;
+                }
+            });
+
+            container.innerHTML = '';
+            filtered.forEach(([code, name]) => {
+                const checked = window._selectedHerbCodes && window._selectedHerbCodes.has(code);
+                const weightVal = window._herbWeights[code] || '';
+                
+                const row = document.createElement('div');
+                row.style.cssText = `
+                    display: flex; flex-direction: column; gap: 10px; padding: 14px;
+                    background: ${checked ? '#e8f5e9' : '#ffffff'};
+                    border: 2px solid ${checked ? '#4CAF50' : '#e0e0e0'};
+                    border-radius: 10px; transition: all 0.2s; min-width: 0;
+                `;
+                row.innerHTML = `
+                    <!-- 上排:勾選框 + 代碼:藥材名 -->
+                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                        <input type="checkbox" id="herb_check_${code}" data-code="${code}" data-name="${name}" 
+                               ${checked ? 'checked' : ''}
+                               onchange="onHerbCheckChanged(this)"
+                               style="width: 26px; height: 26px; cursor: pointer; flex-shrink: 0;">
+                        <label for="herb_check_${code}" style="flex: 1; cursor: pointer; line-height: 1.3; min-width: 0;">
+                            <span style="color: #1976d2; font-family: monospace; font-size: 16px; font-weight: 700;">${code}</span>
+                            <span style="color: #999; font-size: 16px;">：</span>
+                            <span style="font-size: 22px; font-weight: 700; color: #1B4D3E;">${name}</span>
+                        </label>
+                    </div>
+                    <!-- 下排:重量輸入 + 錢 + 克數換算 -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" inputmode="decimal" id="weight_${code}" data-code="${code}" 
+                               placeholder="重量" value="${weightVal}"
+                               ${checked ? '' : 'disabled'}
+                               oninput="convertQianToGram('${code}')"
+                               style="width: 100px; flex-shrink: 0; padding: 12px 12px;
+                                      font-size: 20px; font-weight: 700; text-align: right;
+                                      border: 2px solid ${checked ? '#2196F3' : '#e0e0e0'}; border-radius: 8px;
+                                      background: ${checked ? '#fff' : '#f5f5f5'}; box-sizing: border-box;">
+                        <span style="font-size: 18px; color: #444; font-weight: 700; flex-shrink: 0;">錢</span>
+                        <span style="font-size: 15px; color: #2C5F2D; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="converted_${code}"></span>
+                    </div>
+                `;
+                container.appendChild(row);
+
+                // 若已有保存的重量,觸發換算顯示
+                if (checked && weightVal) {
+                    setTimeout(() => convertQianToGram(code), 0);
+                }
+            });
+
+            // 顯示搜尋結果統計
+            const info = document.getElementById('herbSearchResultInfo');
+            if (info) {
+                if (lower) {
+                    info.textContent = `搜尋「${filterText}」→ 找到 ${filtered.length} / ${HERB_LIST.length} 項`;
+                } else {
+                    info.textContent = `共 ${HERB_LIST.length} 項藥材`;
+                }
+            }
+
+            updateSelectedPreview();
+        }
+
+        // 勾選狀態變更時:啟用/停用重量輸入,並更新樣式
+        function onHerbCheckChanged(checkbox) {
+            const code = checkbox.dataset.code;
+            const weightInput = document.getElementById(`weight_${code}`);
+            const row = checkbox.parentElement;
+
+            if (!window._selectedHerbCodes) window._selectedHerbCodes = new Set();
+
+            if (checkbox.checked) {
+                window._selectedHerbCodes.add(code);
+                if (weightInput) {
+                    weightInput.disabled = false;
+                    weightInput.style.border = '2px solid #2196F3';
+                    weightInput.style.background = '#fff';
+                    weightInput.focus();
+                }
+                row.style.background = '#e8f5e9';
+                row.style.border = '2px solid #4CAF50';
+            } else {
+                window._selectedHerbCodes.delete(code);
+                if (weightInput) {
+                    weightInput.value = '';
+                    weightInput.disabled = true;
+                    weightInput.style.border = '2px solid #e0e0e0';
+                    weightInput.style.background = '#f5f5f5';
+                }
+                // 清掉這一項的暫存
+                if (window._herbWeights) delete window._herbWeights[code];
+                const convSpan = document.getElementById(`converted_${code}`);
+                if (convSpan) convSpan.textContent = '';
+                row.style.background = '#ffffff';
+                row.style.border = '2px solid #e0e0e0';
+            }
+
+            updateSelectedPreview();
+        }
+
+        // 搜尋框 oninput 觸發
+        function filterHerbList() {
+            const text = document.getElementById('herbSearchBox').value;
+            renderHerbList(text);
+        }
+
+        // 更新已勾選預覽(已勾選清單顯示在搜尋框下方)
+        function updateSelectedPreview() {
+            if (!window._selectedHerbCodes) window._selectedHerbCodes = new Set();
+            
+            const preview = document.getElementById('selectedHerbsPreview');
+            const count = window._selectedHerbCodes.size;
+            const cntEl = document.getElementById('selectedCount');
+            if (cntEl) cntEl.textContent = count;
+            
+            if (count > 0) {
+                const items = HERB_LIST.filter(([c, n]) => window._selectedHerbCodes.has(c))
+                                       .map(([c, n]) => `${c}：${n}`);
+                document.getElementById('selectedHerbsList').textContent = items.join('、');
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // 切換特殊及大體積藥材選擇區域
+        function toggleSpecialHerbs() {
+            const herbType = document.getElementById('herbType').value;
+            const selectSection = document.getElementById('specialHerbsSelectSection');
+            const resultSection = document.getElementById('ratioResultSection');
+            
+            if (herbType === 'special') {
+                selectSection.style.display = 'block';
+                resultSection.style.display = 'none';
+                // 重置:搜尋框、勾選紀錄、重量暫存
+                document.getElementById('herbSearchBox').value = '';
+                window._selectedHerbCodes = new Set();
+                window._herbWeights = {};
+                renderHerbList('');
+            } else {
+                selectSection.style.display = 'none';
+                resultSection.style.display = 'none';
+            }
+        }
+
+        // 錢轉克換算函數（1錢 = 3.75克）
+        function convertQianToGram(code) {
+            const qianInput = document.getElementById(`weight_${code}`);
+            const convertedSpan = document.getElementById(`converted_${code}`);
+            if (!qianInput) return;
+
+            // 清理輸入:只保留數字和小數點(防止手機輸入法打進非數字字元)
+            let cleaned = qianInput.value.replace(/[^0-9.]/g, '');
+            // 只允許一個小數點(多餘的移除)
+            const firstDot = cleaned.indexOf('.');
+            if (firstDot !== -1) {
+                cleaned = cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
+            }
+            // 若清理後和原值不同,更新輸入框(保留游標在結尾)
+            if (cleaned !== qianInput.value) {
+                qianInput.value = cleaned;
+            }
+
+            const qianValue = parseFloat(cleaned) || 0;
+
+            // 同步到暫存(避免搜尋過濾時 DOM 重建會弄丟值)
+            if (!window._herbWeights) window._herbWeights = {};
+            window._herbWeights[code] = cleaned;
+
+            if (convertedSpan) {
+                if (qianValue > 0) {
+                    const gramValue = (qianValue * 3.75).toFixed(2);
+                    convertedSpan.textContent = `= ${gramValue}g`;
+                } else {
+                    convertedSpan.textContent = '';
+                }
+            }
+        }
+
+        // 計算特殊及大體積藥材佔比
+        function calculateRatio() {
+            const herbWeight = parseFloat(document.getElementById('herbWeight').value);
+            
+            if (!herbWeight || herbWeight <= 0) {
+                alert('請先輸入藥材總重量！');
+                return;
+            }
+
+            // 先把當前畫面上的重量值同步到暫存(只同步已勾選的,避免空 input 污染)
+            if (!window._herbWeights) window._herbWeights = {};
+            document.querySelectorAll('#herbCheckboxContainer input[id^="weight_"]').forEach(inp => {
+                const code = inp.dataset.code;
+                if (code && window._selectedHerbCodes && window._selectedHerbCodes.has(code)) {
+                    window._herbWeights[code] = inp.value;
+                }
+            });
+            
+            const selectedCodes = Array.from(window._selectedHerbCodes || []);
+
+            if (selectedCodes.length === 0) {
+                alert('請至少勾選一項特殊及大體積藥材！');
+                return;
+            }
+
+            let totalSpecialWeight = 0;
+            let hasInput = false;
+            const detail = [];
+            const missingWeight = [];  // 已勾選但沒填重量的項目
+            
+            selectedCodes.forEach(code => {
+                const qianValue = parseFloat(window._herbWeights[code]) || 0;
+                if (qianValue > 0) {
+                    hasInput = true;
+                    totalSpecialWeight += qianValue * 3.75;
+                    detail.push({ code, qian: qianValue, gram: qianValue * 3.75 });
+                } else {
+                    // 找出對應的藥材名以便提示
+                    const herbInfo = HERB_LIST.find(([c, n]) => c === code);
+                    if (herbInfo) missingWeight.push(`${herbInfo[0]}：${herbInfo[1]}`);
+                }
+            });
+
+            // 若有勾選但沒填重量,提示使用者
+            if (missingWeight.length > 0) {
+                const msg = `以下藥材已勾選但未填重量:\n\n${missingWeight.join('\n')}\n\n要繼續計算嗎?(未填重量的項目會被忽略)`;
+                if (!confirm(msg)) {
+                    return;
+                }
+            }
+            
+            if (!hasInput) {
+                alert('請至少輸入一項已勾選藥材的重量！');
+                return;
+            }
+            
+            // 計算佔比
+            const ratio = (totalSpecialWeight / herbWeight) * 100;
+            
+            // 新判定:佔比 ≥30% → 4.0;<30% → 視同一般藥材 2.0
+            let category, coeff;
+            if (ratio >= 30) {
+                category = '30%以上';
+                coeff = '4.0';
+            } else {
+                category = '30%以下(視同一般藥材)';
+                coeff = '2.0';
+            }
+            
+            // 顯示結果
+            document.getElementById('ratioPercentage').textContent = ratio.toFixed(1);
+            document.getElementById('ratioCategory').textContent = category;
+            document.getElementById('coeffValue').textContent = coeff;
+            document.getElementById('ratioResultSection').style.display = 'block';
+            
+            // 儲存到全域變數供計算使用
+            window.specialHerbRatio = ratio;
+            window.specialHerbCoeff = parseFloat(coeff);
+        }
+
+        function calculate() {
+            // 獲取輸入值
+            const frequency = parseInt(document.getElementById('frequency').value);
+            const days = parseInt(document.getElementById('days').value);
+            const waterPerPack = parseFloat(document.getElementById('waterPerPack').value);
+            const herbWeight = parseFloat(document.getElementById('herbWeight').value);
+            const herbType = document.getElementById('herbType').value;
+
+            // 驗證輸入
+            if (!herbWeight || herbWeight <= 0) {
+                alert('請輸入有效的藥材總重量！');
+                return;
+            }
+
+            if (!waterPerPack || waterPerPack <= 0) {
+                alert('請輸入有效的單包水量！');
+                return;
+            }
+
+            // 計算總包數 = 每日頻率 × 天數
+            const totalPacks = frequency * days;
+
+            // 藥材吸水係數
+            let absorptionCoeff = 2.0;
+            let ratioText = '';
+            let coeffReason = '';
+            
+            if (herbType === 'special') {
+                // 檢查是否已計算佔比
+                if (window.specialHerbCoeff) {
+                    absorptionCoeff = window.specialHerbCoeff;
+                    ratioText = `特殊及大體積藥材佔比 ${window.specialHerbRatio.toFixed(1)}%（${window.specialHerbRatio >= 30 ? '≥30%' : '<30%'}）`;
+                    coeffReason = window.specialHerbRatio >= 30 
+                        ? '特殊及大體積藥材（≥30%）' 
+                        : '佔比未達30%,視同一般藥材';
+                } else {
+                    alert('請先完成特殊及大體積藥材選擇並計算佔比！');
+                    return;
+                }
+            } else {
+                coeffReason = '一般藥材';
+            }
+
+            // 藥材吸水量
+            const absorption = herbWeight * absorptionCoeff;
+
+            // 單包水量概算（需求量 + 20ml）
+            const waterEstimate = waterPerPack + 20;
+
+            // 藥液產出量
+            const liquidOutput = totalPacks * waterEstimate;
+
+            // 總加水量基礎計算
+            let totalWater = absorption + liquidOutput;
+
+            // 估算體積（藥材重量 + 總水量）
+            const estimatedVolume = herbWeight + totalWater;
+
+            // 自動計算建議器具
+            let recommendedEquipment = null;
+            for (let eq of equipment) {
+                if (totalWater <= eq.minWater) {
+                    recommendedEquipment = eq;
+                    break;
+                }
+            }
+
+            if (!recommendedEquipment) {
+                recommendedEquipment = equipment[equipment.length - 1];
+            }
+
+            // 檢查是否超過80%容量，持續升級直到找到合適容器
+            const capacityRatio = estimatedVolume / recommendedEquipment.capacity;
+            let finalEquipment = recommendedEquipment;
+            let autoUpgraded = false;
+            let finalCapacityRatio = capacityRatio;
+            
+            if (capacityRatio > 0.8) {
+                // 自動升級到足夠大的器具
+                let currentIndex = equipment.indexOf(recommendedEquipment);
+                
+                while (currentIndex < equipment.length - 1) {
+                    currentIndex++;
+                    const testEquipment = equipment[currentIndex];
+                    const testRatio = estimatedVolume / testEquipment.capacity;
+                    
+                    if (testRatio <= 0.8) {
+                        // 找到合適的器具
+                        finalEquipment = testEquipment;
+                        finalCapacityRatio = testRatio;
+                        autoUpgraded = true;
+                        break;
+                    }
+                    
+                    // 如果是最後一個器具，即使超過80%也使用
+                    if (currentIndex === equipment.length - 1) {
+                        finalEquipment = testEquipment;
+                        finalCapacityRatio = testRatio;
+                        autoUpgraded = true;
+                        break;
+                    }
+                }
+            }
+
+            // 儲存推薦器具到全域變數，供後續使用
+            window.currentRecommendedEquipment = finalEquipment;
+            window.currentEquipmentList = equipment;
+            window.autoUpgraded = autoUpgraded;
+            window.capacityRatio = capacityRatio;
+            window.finalCapacityRatio = finalCapacityRatio;
+
+            // 顯示結果
+            document.getElementById('totalWater').textContent = Math.round(totalWater) + ' ml';
+            document.getElementById('estimatedVolume').textContent = Math.round(estimatedVolume) + ' ml';
+            document.getElementById('totalPacks').textContent = totalPacks + ' 包';
+            document.getElementById('absorption').textContent = Math.round(absorption) + ' ml';
+            document.getElementById('liquidOutput').textContent = liquidOutput + ' ml';
+
+            // 根據是否自動升級，顯示不同的容器區塊
+            if (autoUpgraded) {
+                // 顯示警示版本
+                const warningDiv = document.getElementById('autoCapacityWarning');
+                warningDiv.style.display = 'block';
+                document.getElementById('warningRatio').textContent = (capacityRatio * 100).toFixed(1);
+                document.getElementById('warningEquipmentIcon').textContent = finalEquipment.icon;
+                document.getElementById('warningEquipmentName').textContent = finalEquipment.name;
+                document.getElementById('warningEquipmentSpec').textContent = 
+                    `最大容量：${finalEquipment.capacity}ml | 容許水量：${finalEquipment.minWater}ml`;
+                
+                // 如果升級後仍超過80%，額外警告
+                if (window.finalCapacityRatio > 0.8) {
+                    const extraWarning = document.createElement('div');
+                    extraWarning.style.cssText = 'margin-top: 15px; padding: 15px; background: #fff3cd; border-left: 4px solid #ff9800; border-radius: 8px;';
+                    extraWarning.innerHTML = `
+                        <div style="color: #e65100; font-size: 16px; font-weight: 700; margin-bottom: 5px;">
+                            ⚠️ 特別注意
+                        </div>
+                        <div style="color: #f57c00; font-size: 14px; line-height: 1.6;">
+                            此為最大可用器具，估算體積仍達 ${(window.finalCapacityRatio * 100).toFixed(1)}%，請聯絡主管確認！
+                        </div>
+                    `;
+                    // 檢查是否已存在額外警告
+                    const existingWarning = warningDiv.querySelector('[data-extra-warning]');
+                    if (existingWarning) {
+                        existingWarning.remove();
+                    }
+                    extraWarning.setAttribute('data-extra-warning', 'true');
+                    warningDiv.firstElementChild.appendChild(extraWarning);
+                }
+            } else {
+                // 正常情況：顯示正常容器區塊
+                document.getElementById('autoCapacityWarning').style.display = 'none';
+                const normalDiv = document.getElementById('normalEquipment');
+                normalDiv.style.display = 'block';
+                document.getElementById('normalRatio').textContent = (finalCapacityRatio * 100).toFixed(1);
+                document.getElementById('normalEquipmentIcon').textContent = finalEquipment.icon;
+                document.getElementById('normalEquipmentName').textContent = finalEquipment.name;
+                document.getElementById('normalEquipmentSpec').textContent = 
+                    `最大容量：${finalEquipment.capacity}ml | 容許水量：${finalEquipment.minWater}ml`;
+            }
+
+            // 顯示計算公式
+            let formulaText = `總加水量 = 藥材總重(${herbWeight}g) × ${absorptionCoeff} + 總包數(${totalPacks}) × 單包概算(${waterEstimate}ml)`;
+            formulaText += `\n= ${Math.round(absorption)} + ${liquidOutput}`;
+            formulaText += ` = ${Math.round(totalWater)} ml`;
+            formulaText += `\n\n單包概算 = ${waterPerPack}ml + 20ml = ${waterEstimate}ml`;
+
+            document.getElementById('formulaText').textContent = formulaText;
+
+            // 警告訊息
+            const warningBox = document.getElementById('warningBox');
+            const warningText = document.getElementById('warningText');
+            let warnings = [];
+
+            if (totalWater > finalEquipment.capacity) {
+                warnings.push('⚠️ 計算水量超過所選設備最大容量，請改用更大設備或聯絡主管！');
+            }
+
+            if (autoUpgraded) {
+                warnings.push(`⚠️ 估算體積超過原建議器具的80%容量（${(capacityRatio * 100).toFixed(1)}%），已自動改用更大器具`);
+            }
+
+            // 顯示係數原因
+            if (coeffReason) {
+                warnings.push(`✓ ${coeffReason}，吸水係數 ${absorptionCoeff}`);
+            }
+            
+            if (ratioText) {
+                warnings.push(`${ratioText}`);
+            }
+
+            if (warnings.length > 0) {
+                warningText.innerHTML = warnings.map(w => `<p>${w}</p>`).join('');
+                warningBox.style.display = 'block';
+            } else {
+                warningBox.style.display = 'none';
+            }
+
+            // 顯示結果區域
+            document.getElementById('result').classList.add('show');
+            
+            // 滾動到結果區域
+            setTimeout(() => {
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+
+            // ===== 不自動清空,讓使用者看完結果後手動按「🔄 清空資料」按鈕 =====
+        }
+
+        // 自動清空所有輸入欄位(計算完成後呼叫,不清空結果區域)
+        function autoClearInputs() {
+            // 清空基本輸入欄位
+            document.getElementById('frequency').value = '2';      // 預設 BID
+            document.getElementById('days').value = '';
+            document.getElementById('waterPerPack').value = '';
+            document.getElementById('herbWeight').value = '';
+            document.getElementById('herbType').value = 'normal';  // 預設一般藥材
+
+            // 隱藏特殊藥材相關區域
+            document.getElementById('specialHerbsSelectSection').style.display = 'none';
+            document.getElementById('ratioResultSection').style.display = 'none';
+            // herbInfoSection 維持隱藏(這個區塊現在不顯示)
+
+            // 清空全域已勾選紀錄與重量暫存
+            window._selectedHerbCodes = new Set();
+            window._herbWeights = {};
+
+            // 清空搜尋框
+            const searchBox = document.getElementById('herbSearchBox');
+            if (searchBox) searchBox.value = '';
+
+            // 清空勾選清單容器
+            const container = document.getElementById('herbCheckboxContainer');
+            if (container) container.innerHTML = '';
+
+            // 隱藏已勾選預覽
+            const preview = document.getElementById('selectedHerbsPreview');
+            if (preview) preview.style.display = 'none';
+
+            // 清空全域變數
+            window.specialHerbRatio = null;
+            window.specialHerbCoeff = null;
+        }
+
+        // Enter鍵觸發計算
+        document.getElementById('waterPerPack').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculate();
+        });
+        document.getElementById('herbWeight').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculate();
+        });
+
+        // 修改calculate函數，加入使用記錄
+        const originalCalculate = calculate;
+        calculate = function() {
+            recordUsage();  // 記錄使用次數
+            return originalCalculate();
+        };
+
+    </script>
+
+    <style>
+        .login-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1B4D3E 0%, #2C5F2D 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #1B4D3E 0%, #2C5F2D 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .login-header h1 {
+            font-size: 22px;
+            margin: 0;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+
+        .login-header .subtitle-small {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0 0 10px 0;
+        }
+
+        .login-content {
+            padding: 30px 25px;
+        }
+
+        @media (max-width: 600px) {
+            .login-header h1 {
+                font-size: 20px;
+            }
+            .login-content {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // 檢查是否已登入
+        window.onload = function() {
+            // 初始化預設員工資料（如果還沒有）
+            initializeEmployeeList();
+            
+            const savedEmployeeId = localStorage.getItem('employeeId');
+            if (savedEmployeeId) {
+                // 已登入，直接顯示主系統
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                window.currentEmployeeId = savedEmployeeId;
+                // 顯示當前登入員工編號和姓名
+                updateCurrentEmployeeDisplay(savedEmployeeId);
+            }
+        };
+
+        // 初始化預設員工清單
+        function initializeEmployeeList() {
+            let employees = JSON.parse(localStorage.getItem('employeeList') || 'null');
+            
+            // 如果還沒有員工資料，載入預設資料
+            if (!employees) {
+                employees = {
+                    "000003201": { name: "莊清祥", isAdmin: false },
+                    "000005512": { name: "劉怡青", isAdmin: false },
+                    "000006502": { name: "陳冠佑", isAdmin: false },
+                    "000007159": { name: "張紀卿", isAdmin: false },
+                    "000007187": { name: "陳綺華", isAdmin: false },
+                    "000007252": { name: "張靜怡", isAdmin: false },
+                    "000007756": { name: "蕭亦庭", isAdmin: false },
+                    "000008042": { name: "陳建全", isAdmin: false },
+                    "000008134": { name: "李雅蓁", isAdmin: true },  // 主管
+                    "000009237": { name: "胡仁珍", isAdmin: false },
+                    "000012089": { name: "林欽淵", isAdmin: false },
+                    "000012891": { name: "陳辰芳", isAdmin: false },
+                    "000013294": { name: "蘇民傑", isAdmin: false },
+                    "000013696": { name: "王雅萍", isAdmin: false },
+                    "000015486": { name: "許登揚", isAdmin: false },
+                    "000016181": { name: "陳玫舒", isAdmin: false },
+                    "000016419": { name: "黃湘容", isAdmin: false },
+                    "000016923": { name: "邱美雅", isAdmin: false },
+                    "000017964": { name: "林君蔓", isAdmin: false },
+                    "000018137": { name: "洪志豪", isAdmin: false },
+                    "000018143": { name: "邱柔雯", isAdmin: false },
+                    "000018371": { name: "許文馨", isAdmin: true },  // 主管
+                    "000018888": { name: "謝蕙霞", isAdmin: false },
+                    "000019052": { name: "賴欣君", isAdmin: false },
+                    "000019714": { name: "林順治", isAdmin: false },
+                    "000020130": { name: "胡家瑜", isAdmin: false },
+                    "000021091": { name: "林建志", isAdmin: false },
+                    "000023133": { name: "林詩怡", isAdmin: false },
+                    "000023276": { name: "鄧鈞庭", isAdmin: false },
+                    "000023408": { name: "張雅媛", isAdmin: false },
+                    "000025740": { name: "林心瑜", isAdmin: false },
+                    "000026309": { name: "林燕萍", isAdmin: false },
+                    "000026314": { name: "李家豪", isAdmin: false },
+                    "000026431": { name: "沈逸婷", isAdmin: false },
+                    "000026998": { name: "何曉嫻", isAdmin: false },
+                    "000027132": { name: "趙崇勝", isAdmin: false },
+                    "000027273": { name: "王子宸", isAdmin: false },
+                    "000027440": { name: "楊家榮", isAdmin: false },
+                    "000028056": { name: "洪培原", isAdmin: false },
+                    "000028372": { name: "李宛怡", isAdmin: false },
+                    "000028771": { name: "蔡淨嚴", isAdmin: false },
+                    "000030130": { name: "徐千惠", isAdmin: false },
+                    "000030713": { name: "李鎧宏", isAdmin: false },
+                    "000030768": { name: "朱怡蓁", isAdmin: false },
+                    "000031305": { name: "陳羿勳", isAdmin: false },
+                    "000032692": { name: "李孟謙", isAdmin: false },
+                    "000032806": { name: "鄭群譯", isAdmin: false },
+                    "000033260": { name: "朱弈緬", isAdmin: false },
+                    "000033284": { name: "李庭逸", isAdmin: false },
+                    "000033745": { name: "陳詩韻", isAdmin: false },
+                    "000034796": { name: "王芷翎", isAdmin: false },
+                    "000036670": { name: "沈凡意", isAdmin: false },
+                    "000036671": { name: "陳佩姍", isAdmin: false },
+                    "000037039": { name: "郭芳瑜", isAdmin: false },
+                    "000037461": { name: "李思嫺", isAdmin: false },
+                    "000037740": { name: "李芝綺", isAdmin: false },
+                    "000038196": { name: "阮祥豪", isAdmin: false },
+                    "000038514": { name: "池俊弘", isAdmin: false },
+                    "000038687": { name: "廖暄旻", isAdmin: false },
+                    "000039239": { name: "余積修", isAdmin: false },
+                    "000039485": { name: "張雅婷", isAdmin: true },  // 主管
+                    "000039561": { name: "李宥榛", isAdmin: false },
+                    "000039633": { name: "陳泓佑", isAdmin: false },
+                    "000039718": { name: "張鑑宏", isAdmin: false },
+                    "000039996": { name: "陳盈蓁", isAdmin: false },
+                    "000039997": { name: "陳合慶", isAdmin: false },
+                    "000040303": { name: "林倍如", isAdmin: false },
+                    "000040891": { name: "李紀賢", isAdmin: false },
+                    "000040992": { name: "王皓儀", isAdmin: false },
+                    "000041059": { name: "施瑢家", isAdmin: false },
+                    "000041179": { name: "羅如海", isAdmin: false },
+                    "000041260": { name: "張耀文", isAdmin: false },
+                    "000041535": { name: "林怡菁", isAdmin: false },
+                    "000041686": { name: "陳毓如", isAdmin: false },
+                    "000041918": { name: "童淨安", isAdmin: false },
+                    "000042163": { name: "詹承彥", isAdmin: false },
+                    "000042164": { name: "黃于軒", isAdmin: false },
+                    "000042717": { name: "王皓平", isAdmin: false },
+                    "000043188": { name: "李柏昕", isAdmin: false },
+                    "000043450": { name: "黃筱婷", isAdmin: false },
+                    "000043451": { name: "湯霈馨", isAdmin: false },
+                    "000043452": { name: "吳展榕", isAdmin: false },
+                    "000043491": { name: "林絮筠", isAdmin: false },
+                    "000043695": { name: "李翎菲", isAdmin: false },
+                    "000044272": { name: "林宗義", isAdmin: false },
+                    "000044308": { name: "徐楷柔", isAdmin: false },
+                    "000044548": { name: "劉瑞恩", isAdmin: false },
+                    "000044847": { name: "周恢慈", isAdmin: false },
+                    "000045603": { name: "陳怡㚬", isAdmin: false },
+                    "000045723": { name: "賴婷筠", isAdmin: false },
+                    "000045724": { name: "黃緯軒", isAdmin: false },
+                    "000045829": { name: "邱譯平", isAdmin: false },
+                    "000045830": { name: "陳伃萱", isAdmin: false },
+                    "000045866": { name: "吳家蓉", isAdmin: false },
+                    "000045867": { name: "吳咸蓉", isAdmin: false },
+                    "000045868": { name: "林芷安", isAdmin: false },
+                    "000046154": { name: "張文豪", isAdmin: false },
+                    "000046167": { name: "黃千恬", isAdmin: false },
+                    "000046479": { name: "傅琮翔", isAdmin: false },
+                    "000046573": { name: "林兪均", isAdmin: false },
+                    "000046574": { name: "劉崇瑜", isAdmin: false }
+                };
+                localStorage.setItem('employeeList', JSON.stringify(employees));
+            }
+        }
+
+        // 更新當前登入員工顯示（編號+姓名）
+        function updateCurrentEmployeeDisplay(employeeId) {
+            const employees = JSON.parse(localStorage.getItem('employeeList') || '{}');
+            const employeeData = employees[employeeId];
+            // 查不到姓名時,用員工編號代替(不顯示「未登記」)
+            let name = employeeData ? (employeeData.name || employeeData) : '';
+            if (!name || name === '未知' || name === '未登記') {
+                name = '工號' + employeeId;
+            }
+            document.getElementById('currentEmployeeId').textContent = employeeId;
+            document.getElementById('currentEmployeeName').textContent = name;
+        }
+
+        // Tab切換
+        function showTab(tab) {
+            if (tab === 'stats') {
+                document.getElementById('statsSection').style.display = 'block';
+                document.getElementById('employeeSection').style.display = 'none';
+                document.getElementById('statsTab').style.background = '#2C5F2D';
+                document.getElementById('statsTab').style.color = 'white';
+                document.getElementById('employeeTab').style.background = '#f5f5f5';
+                document.getElementById('employeeTab').style.color = '#666';
+                loadStats();
+            } else {
+                document.getElementById('statsSection').style.display = 'none';
+                document.getElementById('employeeSection').style.display = 'block';
+                document.getElementById('statsTab').style.background = '#f5f5f5';
+                document.getElementById('statsTab').style.color = '#666';
+                document.getElementById('employeeTab').style.background = '#2C5F2D';
+                document.getElementById('employeeTab').style.color = 'white';
+                loadEmployeeList();
+            }
+        }
+
+        // 員工登入
+        function login() {
+            const employeeId = document.getElementById('employeeId').value.trim();
+            
+            if (!employeeId) {
+                alert('請輸入員工編號！');
+                return;
+            }
+
+            // 儲存員工編號
+            localStorage.setItem('employeeId', employeeId);
+            window.currentEmployeeId = employeeId;
+
+            // 顯示當前登入員工編號和姓名
+            updateCurrentEmployeeDisplay(employeeId);
+
+            // 隱藏登入頁面，顯示主系統
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
+
+        // 顯示管理員登入
+        function showAdminLogin() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminLoginPage').style.display = 'flex';
+        }
+
+        // 返回員工登入
+        function backToLogin() {
+            document.getElementById('adminLoginPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+        }
+
+        // 管理員登入
+        function adminLogin() {
+            const account = document.getElementById('adminAccount').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+
+            // 從 localStorage 讀取員工清單
+            let employees = JSON.parse(localStorage.getItem('employeeList') || 'null');
+            
+            // 如果沒有員工資料，自動初始化
+            if (!employees) {
+                console.log('初始化員工資料...');
+                initializeEmployeeList();
+                employees = JSON.parse(localStorage.getItem('employeeList') || '{}');
+            }
+            
+            // 從員工清單中讀取所有主管
+            const validAdmins = [];
+            
+            Object.entries(employees).forEach(([id, data]) => {
+                const employeeData = typeof data === 'string' ? { name: data, isAdmin: false } : data;
+                if (employeeData.isAdmin) {
+                    validAdmins.push({ account: id, password: 'boss' });
+                }
+            });
+            
+            // 檢查是否為有效的主管帳號且密碼正確
+            const isValid = validAdmins.some(admin => 
+                admin.account === account && admin.password === password
+            );
+            
+            if (isValid) {
+                // 登入成功，顯示統計頁面
+                document.getElementById('adminLoginPage').style.display = 'none';
+                document.getElementById('adminPage').style.display = 'block';
+            } else {
+                alert('帳號或密碼錯誤！');
+            }
+        }
+
+        // 登出
+        function logout() {
+            document.getElementById('adminPage').style.display = 'none';
+            document.getElementById('adminAccount').value = '';
+            document.getElementById('adminPassword').value = '';
+            
+            // 檢查是否有儲存的員工編號
+            if (localStorage.getItem('employeeId')) {
+                document.getElementById('mainApp').style.display = 'block';
+            } else {
+                document.getElementById('loginPage').style.display = 'flex';
+            }
+        }
+
+        // 員工登出（切換帳號）
+        function employeeLogout() {
+            if (confirm('確定要切換帳號嗎？')) {
+                // 清除登入狀態
+                localStorage.removeItem('employeeId');
+                window.currentEmployeeId = null;
+
+                // 清空輸入欄位
+                document.getElementById('employeeId').value = '';
+
+                // 隱藏主系統，顯示登入頁面
+                document.getElementById('mainApp').style.display = 'none';
+                document.getElementById('loginPage').style.display = 'flex';
+            }
+        }
+
+        // 記錄使用次數
+        function recordUsage() {
+            if (!window.currentEmployeeId) return;
+
+            // 從 localStorage 讀取統計資料
+            let stats = JSON.parse(localStorage.getItem('usageStats') || '{}');
+            
+            // 記錄使用次數
+            if (!stats[window.currentEmployeeId]) {
+                stats[window.currentEmployeeId] = {
+                    count: 0,
+                    lastUsed: null,
+                    history: []  // 使用歷史記錄
+                };
+            }
+            
+            const now = new Date().toISOString();
+            stats[window.currentEmployeeId].count++;
+            stats[window.currentEmployeeId].lastUsed = now;
+            
+            // 記錄詳細的使用歷史
+            stats[window.currentEmployeeId].history.push({
+                timestamp: now,
+                date: new Date(now).toLocaleDateString('zh-TW'),
+                time: new Date(now).toLocaleTimeString('zh-TW')
+            });
+            
+            // 儲存回 localStorage
+            localStorage.setItem('usageStats', JSON.stringify(stats));
+            
+            // 同時送到 Google Sheets
+            sendToGoogleSheets(window.currentEmployeeId, now);
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // Google Sheets 設定區
+        // ═══════════════════════════════════════════════════════
+        
+        // Google Apps Script 網址（用於寫入資料）
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwq5hO9JhcYUgCwArsj7p0gcKNdFR_vymJjd1ApokrUOVEjuBy4Aqkt66NZBUKN-6rI/exec';
+        
+        // Google 試算表網址（用於查看統計）
+        const GOOGLE_SHEETS_VIEW_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEDv9ob2QdF1lCTtGjB9wMH-IRi7fG7ttKb6SQO5p8C0k7tO60oRK750Rr-PxxsiXizYeqrYfGJ_nL/pubhtml';
+        
+        // ═══════════════════════════════════════════════════════
+
+        // 送資料到 Google Sheets
+        function sendToGoogleSheets(employeeId, timestamp) {
+            // 檢查網址是否已設定（開發時的提示）
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                console.log('Google Sheets URL 尚未設定');
+                return;
+            }
+            
+            const employees = JSON.parse(localStorage.getItem('employeeList') || '{}');
+            const employeeData = employees[employeeId];
+            // 查不到姓名時,直接用員工編號當作姓名(避免出現「未知」無法辨識)
+            let employeeName = employeeData ? (employeeData.name || employeeData) : '';
+            if (!employeeName || employeeName === '未知') {
+                employeeName = '工號' + employeeId;
+            }
+            
+            const data = {
+                employeeId: employeeId,
+                employeeName: employeeName,
+                timestamp: timestamp,
+                date: new Date(timestamp).toLocaleDateString('zh-TW'),
+                // 使用 24 小時制(HH:MM:SS)讓試算表的時段統計公式能正確解析小時數
+                time: new Date(timestamp).toLocaleTimeString('zh-TW', { hour12: false })
+            };
+            
+            // 送出資料到 Google Sheets
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                console.log('使用紀錄已送至 Google Sheets');
+            })
+            .catch(error => {
+                console.error('送至 Google Sheets 失敗:', error);
+            });
+        }
+
+        // 開啟 Google Sheets
+        function openGoogleSheets() {
+            // 檢查網址是否已設定
+            if (!GOOGLE_SHEETS_VIEW_URL || GOOGLE_SHEETS_VIEW_URL === 'YOUR_GOOGLE_SHEETS_URL_HERE') {
+                alert('請先在程式碼中設定 Google 試算表網址！\n\n請將 GOOGLE_SHEETS_VIEW_URL 設定為您的試算表網址。');
+                return;
+            }
+            
+            // 在新分頁開啟
+            window.open(GOOGLE_SHEETS_VIEW_URL, '_blank');
+        }
+        
+        // 查看本機統計
+        function viewLocalStats() {
+            document.getElementById('statsSection').querySelector('div.section').style.display = 'none';
+            document.getElementById('localStatsSection').style.display = 'block';
+            loadStats();
+        }
+        
+        // 返回統計首頁
+        function backToStatsHome() {
+            document.getElementById('statsSection').querySelector('div.section').style.display = 'block';
+            document.getElementById('localStatsSection').style.display = 'none';
+        }
+
+        // 載入統計資料
+        function loadStats(startDate = null, endDate = null) {
+            const stats = JSON.parse(localStorage.getItem('usageStats') || '{}');
+            const statsContent = document.getElementById('statsContent');
+            
+            if (Object.keys(stats).length === 0) {
+                statsContent.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">尚無使用記錄</p>';
+                return;
+            }
+
+            // 處理日期篩選
+            let filteredStats = [];
+            Object.entries(stats).forEach(([id, data]) => {
+                let filteredHistory = data.history || [];
+                
+                // 如果有日期篩選
+                if (startDate || endDate) {
+                    filteredHistory = filteredHistory.filter(record => {
+                        const recordDate = new Date(record.timestamp);
+                        const start = startDate ? new Date(startDate) : null;
+                        const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+                        
+                        if (start && end) {
+                            return recordDate >= start && recordDate <= end;
+                        } else if (start) {
+                            return recordDate >= start;
+                        } else if (end) {
+                            return recordDate <= end;
+                        }
+                        return true;
+                    });
+                }
+                
+                if (filteredHistory.length > 0) {
+                    filteredStats.push({
+                        employeeId: id,
+                        count: filteredHistory.length,
+                        lastUsed: filteredHistory[filteredHistory.length - 1].timestamp,
+                        history: filteredHistory
+                    });
+                }
+            });
+
+            if (filteredStats.length === 0) {
+                statsContent.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">此期間無使用記錄</p>';
+                return;
+            }
+
+            // 排序
+            filteredStats.sort((a, b) => b.count - a.count);
+
+            // 儲存當前篩選結果供匯出使用
+            window.currentFilteredStats = filteredStats;
+
+            // 生成表格
+            let html = `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f5f5f5;">
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">員工編號</th>
+                            <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">使用次數</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">最後使用時間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredStats.forEach((item, index) => {
+                const lastUsed = item.lastUsed ? new Date(item.lastUsed).toLocaleString('zh-TW') : '-';
+                const bgColor = index % 2 === 0 ? '#fff' : '#f9f9f9';
+                html += `
+                    <tr style="background: ${bgColor};">
+                        <td style="padding: 12px; border: 1px solid #ddd;">${item.employeeId}</td>
+                        <td style="padding: 12px; text-align: center; border: 1px solid #ddd; font-weight: 700; color: #2C5F2D;">${item.count}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-size: 13px; color: #666;">${lastUsed}</td>
+                    </tr>
+                `;
+            });
+
+            const totalCount = filteredStats.reduce((sum, item) => sum + item.count, 0);
+            const dateRangeText = (startDate || endDate) ? 
+                ` (${startDate || '起始'} ~ ${endDate || '現在'})` : '';
+
+            html += `
+                    </tbody>
+                </table>
+                <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0; color: #1565c0; font-size: 15px;">
+                        總使用次數：<strong style="font-size: 20px; color: #2C5F2D;">${totalCount}</strong> 次 | 
+                        使用人數：<strong style="font-size: 20px; color: #2C5F2D;">${filteredStats.length}</strong> 人
+                        ${dateRangeText}
+                    </p>
+                </div>
+            `;
+
+            statsContent.innerHTML = html;
+        }
+
+        // 篩選統計資料
+        function filterStats() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate && !endDate) {
+                alert('請至少選擇一個日期！');
+                return;
+            }
+            
+            if (startDate && endDate && startDate > endDate) {
+                alert('開始日期不能晚於結束日期！');
+                return;
+            }
+            
+            loadStats(startDate, endDate);
+        }
+
+        // 重置篩選
+        function resetFilter() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            loadStats();
+        }
+
+        // 匯出CSV
+        function exportCSV() {
+            const stats = window.currentFilteredStats || [];
+            
+            if (stats.length === 0) {
+                alert('沒有資料可匯出！');
+                return;
+            }
+
+            // 建立CSV內容（包含BOM以支援中文）
+            let csv = '\uFEFF';  // UTF-8 BOM
+            csv += '員工編號,使用日期,使用時間\n';
+            
+            // 展開每個使用記錄
+            stats.forEach(item => {
+                item.history.forEach(record => {
+                    csv += `${item.employeeId},${record.date},${record.time}\n`;
+                });
+            });
+
+            // 建立下載連結
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const startDate = document.getElementById('startDate').value || '全部';
+            const endDate = document.getElementById('endDate').value || '全部';
+            const filename = `好媳婦使用統計_${startDate}_${endDate}_${new Date().toLocaleDateString('zh-TW').replace(/\//g, '')}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ===== 員工維護功能 =====
+        
+        // 清空表單:第一步,顯示頁面上方的警告條(取代瀏覽器原生 confirm)
+        function clearForm() {
+            const bar = document.getElementById('clearConfirmBar');
+            if (bar) {
+                bar.style.transform = 'translateY(0)';
+                // 捲到頁面頂部讓使用者看到警告條
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // 取消清空 - 收起警告條
+        function cancelClearForm() {
+            const bar = document.getElementById('clearConfirmBar');
+            if (bar) bar.style.transform = 'translateY(-100%)';
+        }
+
+        // 確認清空 - 收起警告條並真正執行清空
+        function confirmClearForm() {
+            // 先收起警告條
+            const bar = document.getElementById('clearConfirmBar');
+            if (bar) bar.style.transform = 'translateY(-100%)';
+
+            // 清空所有輸入欄位
+            document.getElementById('frequency').value = '2';  // 預設BID
+            document.getElementById('days').value = '';
+            document.getElementById('waterPerPack').value = '';
+            document.getElementById('herbWeight').value = '';
+            document.getElementById('herbType').value = 'normal';  // 預設一般藥材
+            
+            // 隱藏特殊藥材區域
+            document.getElementById('specialHerbsSelectSection').style.display = 'none';
+            document.getElementById('ratioResultSection').style.display = 'none';
+            // herbInfoSection 維持隱藏
+            
+            // 清空全域已勾選紀錄與重量暫存
+            window._selectedHerbCodes = new Set();
+            window._herbWeights = {};
+            
+            // 清空搜尋框
+            const searchBox = document.getElementById('herbSearchBox');
+            if (searchBox) searchBox.value = '';
+            
+            // 清空勾選清單容器
+            const container = document.getElementById('herbCheckboxContainer');
+            if (container) container.innerHTML = '';
+            
+            // 隱藏已勾選預覽
+            const preview = document.getElementById('selectedHerbsPreview');
+            if (preview) preview.style.display = 'none';
+            
+            // 清空全域變數
+            window.specialHerbRatio = null;
+            window.specialHerbCoeff = null;
+            
+            // 隱藏結果區域
+            document.getElementById('result').classList.remove('show');
+            
+            // 捲動到頁面頂部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 聚焦到天數欄位
+            setTimeout(() => {
+                document.getElementById('days').focus();
+            }, 500);
+        }
+        
+        // 載入員工清單
+        function loadEmployeeList() {
+            const employees = JSON.parse(localStorage.getItem('employeeList') || '{}');
+            const employeeListContent = document.getElementById('employeeListContent');
+            const employeeCount = document.getElementById('employeeCount');
+            
+            const sortedEmployees = Object.entries(employees).sort((a, b) => a[0].localeCompare(b[0]));
+            employeeCount.textContent = sortedEmployees.length;
+            
+            if (sortedEmployees.length === 0) {
+                employeeListContent.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">尚無員工資料</p>';
+                return;
+            }
+
+            let html = `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f5f5f5;">
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd; width: 140px;">員工編號</th>
+                            <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">姓名</th>
+                            <th style="padding: 12px; text-align: center; border: 1px solid #ddd; width: 80px;">主管</th>
+                            <th style="padding: 12px; text-align: center; border: 1px solid #ddd; width: 100px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            sortedEmployees.forEach(([id, data], index) => {
+                const employeeData = typeof data === 'string' ? { name: data, isAdmin: false } : data;
+                const name = employeeData.name || data;
+                const isAdmin = employeeData.isAdmin || false;
+                const bgColor = index % 2 === 0 ? '#fff' : '#f9f9f9';
+                
+                html += `
+                    <tr style="background: ${bgColor};">
+                        <td style="padding: 12px; border: 1px solid #ddd; font-family: 'Arial', sans-serif;">${id}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${name}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                            <input type="checkbox" ${isAdmin ? 'checked' : ''} 
+                                   onchange="toggleAdmin('${id}', this.checked)" 
+                                   style="width: 18px; height: 18px; cursor: pointer;">
+                        </td>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                            <button onclick="deleteEmployee('${id}')" style="padding: 5px 12px; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                刪除
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            employeeListContent.innerHTML = html;
+        }
+
+        // 新增員工
+        function addEmployee() {
+            const id = document.getElementById('newEmployeeId').value.trim();
+            const name = document.getElementById('newEmployeeName').value.trim();
+            const isAdmin = document.getElementById('newEmployeeIsAdmin').checked;
+            
+            if (!id) {
+                alert('請輸入員工編號！');
+                return;
+            }
+            
+            if (!name) {
+                alert('請輸入姓名！');
+                return;
+            }
+            
+            const employees = JSON.parse(localStorage.getItem('employeeList') || '{}');
+            
+            if (employees[id]) {
+                alert('此員工編號已存在！');
+                return;
+            }
+            
+            employees[id] = { name: name, isAdmin: isAdmin };
+            localStorage.setItem('employeeList', JSON.stringify(employees));
+            
+            // 如果設為主管，更新管理員登入驗證
+            if (isAdmin) {
+                updateAdminLogin();
+            }
+            
+            // 清空輸入欄位
+            document.getElementById('newEmployeeId').value = '';
+            document.getElementById('newEmployeeName').value = '';
+            document.getElementById('newEmployeeIsAdmin').checked = false;
+            
+            // 重新載入清單
+            loadEmployeeList();
+            
+            const adminText = isAdmin ? ' (主管)' : '';
+            alert(`已新增：${id} - ${name}${adminText}`);
+        }
+
+        // 切換主管狀態
+        function toggleAdmin(employeeId, isAdmin) {
+            const employees = JSON.parse(localStorage.getItem('employeeList') || '{}');
+            
+            if (!employees[employeeId]) return;
+            
+            // 確保資料結構正確
+            if (typeof employees[employeeId] === 'string') {
+                employees[employeeId] = { 
+                    name: employees[employeeId], 
+                    isAdmin: isAdmin 
+                };
+            } else {
+                employees[employeeId].isAdmin = isAdmin;
+            }
+            
+            localStorage.setItem('employeeList', JSON.stringify(employees));
+            
+            // 更新管理員登入驗證
+            updateAdminLogin();
+            
+            const statusText = isAdmin ? '設為主管' : '取消主管';
+            console.log(`${employeeId} 已${statusText}`);
+        }
+
+        // 更新管理員登入驗證（動態生成）
+        function updateAdminLogin() {
+            // 這個函數在 adminLogin() 中會動態讀取員工資料
+            // 所以不需要額外處理
+        }
+
+        // 刪除員工
+        function deleteEmployee(id) {
+            if (!confirm(`確定要刪除員工編號 ${id} 嗎？`)) {
+                return;
+            }
+            
+            const employees = JSON.parse(localStorage.getItem('employeeList') || '{}');
+            delete employees[id];
+            localStorage.setItem('employeeList', JSON.stringify(employees));
+            
+            // 重新載入清單
+            loadEmployeeList();
+            
+            alert('已刪除');
+        }
+    </script>
 </body>
 </html>
