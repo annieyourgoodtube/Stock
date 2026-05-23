@@ -138,12 +138,9 @@
 
   <footer>
     <div class="foot-btns">
-      <button class="foot-btn" onclick="exportData()">匯出備份</button>
-      <button class="foot-btn" onclick="document.getElementById('importFile').click()">匯入備份</button>
       <button class="foot-btn" onclick="resetData()">還原預設</button>
-      <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(event)">
     </div>
-    <div class="foot-note">資料自動儲存在這台裝置的瀏覽器。換手機或清除瀏覽器資料前，請先「匯出備份」，到新裝置再「匯入備份」。</div>
+    <div class="foot-note">資料自動儲存在這台裝置的瀏覽器。請留意：若清除瀏覽器資料或更換裝置，資料將無法復原，需重新輸入。</div>
   </footer>
 </div>
 
@@ -745,35 +742,6 @@ function resetData() {
     data = JSON.parse(JSON.stringify(SEED));
     editingId = null; save(); render();
   }
-}
-function exportData() {
-  const blob = new Blob([JSON.stringify(data,null,2)], { type:"application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "資產備份_" + new Date().toISOString().slice(0,10) + ".json";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-function importData(ev) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const obj = JSON.parse(e.target.result);
-      if (obj && obj.deposits && obj.etfs) {
-        data = { cash:obj.cash||[], deposits:obj.deposits||[], etfs:obj.etfs||[], stocks:obj.stocks||[],
-          insurances:obj.insurances||[], fxRate:obj.fxRate==null?32.5:obj.fxRate,
-          fxRateJpy:obj.fxRateJpy==null?0.20:obj.fxRateJpy,
-          fxRateEur:obj.fxRateEur==null?36.6:obj.fxRateEur };
-        editingId = null; save(); render();
-        alert("匯入成功！");
-      } else alert("檔案格式不正確。");
-    } catch (err) { alert("讀取失敗：檔案可能損毀。"); }
-  };
-  reader.readAsText(file);
-  ev.target.value = "";
 }
 
 data = load();
